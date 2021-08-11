@@ -18,4 +18,12 @@ public class GUIItem {
         this.item = item;
         this.args.addAll(Arrays.asList(args));
     }
+
+    @Override
+    public String toString() {
+        return "GUIItem{" +
+                "item=" + item +
+                ", args=" + args +
+                '}';
+    }
 }

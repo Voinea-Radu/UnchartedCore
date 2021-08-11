@@ -16,7 +16,7 @@ public class SignShopCommand extends Command {
     /**
      * @param plugin Main class
      */
-    public SignShopCommand(@NotNull Main plugin, SignShopModule module) {
+    public SignShopCommand(@NotNull Main plugin) {
         super(plugin, Collections.singletonList("signshop"), "", "", true, false, "delete");
     }
 

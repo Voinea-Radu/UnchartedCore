@@ -5,6 +5,8 @@ import dev.lightdream.unchartedcore.commands.Command;
 import dev.lightdream.unchartedcore.modules.CoreModule;
 import org.bukkit.event.Listener;
 
+import java.util.List;
+
 public class EnchantingModule extends CoreModule {
 
     public static EnchantingModule instance;
@@ -22,7 +24,7 @@ public class EnchantingModule extends CoreModule {
     }
 
     @Override
-    public Command registerCommands() {
+    public List<Command> registerCommands() {
         return null;
     }
 

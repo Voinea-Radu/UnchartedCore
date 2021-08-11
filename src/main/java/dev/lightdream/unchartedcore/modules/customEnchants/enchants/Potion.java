@@ -5,19 +5,29 @@ import org.bukkit.enchantments.Enchantment;
 import org.bukkit.enchantments.EnchantmentTarget;
 import org.bukkit.inventory.ItemStack;
 
-public class ComboBoost extends Enchantment {
-    public ComboBoost(int id) {
+import java.util.List;
+
+public class Potion extends Enchantment {
+
+    private final String name;
+    private final int maxLevel;
+    private final List<String> targets;
+
+    public Potion(int id, String name, int maxLevel, List<String> targets) {
         super(id);
+        this.name = name;
+        this.maxLevel = maxLevel;
+        this.targets = targets;
     }
 
     @Override
     public String getName() {
-        return CustomEnchantsModule.instance.settings.comboBoost.name;
+        return name;
     }
 
     @Override
     public int getMaxLevel() {
-        return CustomEnchantsModule.instance.settings.comboBoost.maxLevel;
+        return maxLevel;
     }
 
     @Override
@@ -37,7 +47,7 @@ public class ComboBoost extends Enchantment {
 
     @Override
     public boolean canEnchantItem(ItemStack item) {
-        for (String target : CustomEnchantsModule.instance.settings.comboBoost.target) {
+        for (String target : targets) {
             if (CustomEnchantsModule.instance.enchantTargets.contains(target)) {
                 if (EnchantmentTarget.valueOf(target).includes(item.getType())) {
                     return true;

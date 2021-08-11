@@ -7,6 +7,7 @@ import dev.lightdream.unchartedcore.utils.Utils;
 import dev.lightdream.unchartedcore.utils.init.DatabaseUtils;
 import dev.lightdream.unchartedcore.utils.init.MessageUtils;
 import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -105,27 +106,41 @@ public class SignShopEvents implements Listener {
             }
         }
 
+        BuySellResponse response;
         switch (signShop.type) {
             case "BUY":
-                count = Utils.addAvailable(player, signShop.getDetails().material.parseMaterial(), count, false);
-                price = data.buyPrice;
-                if (plugin.getEconomy().getBalance(player) >= price * count) {
-                    plugin.getEconomy().withdrawPlayer(player, price * count);
-                    setSessionSign(player, signShop, count * price);
-                    Utils.addAvailable(player, signShop.getDetails().material.parseMaterial(), count, true);
-                } else {
-                    Utils.removeAvailable(player, count, signShop.getDetails().material.parseMaterial());
+                response = buy(count, player, data.material.parseMaterial());
+                if (response.response) {
+                    setSessionSign(player, signShop, response.count * response.price);
                 }
                 break;
             case "SELL":
-                price = data.sellPrice;
-                count = Utils.removeAvailable(player, count, signShop.getDetails().material.parseMaterial());
-                plugin.getEconomy().depositPlayer(player, price * count);
-                setSessionSign(player, signShop, count * price);
+                response = sell(count, player, data.material.parseMaterial());
+                setSessionSign(player, signShop, response.count * response.price);
                 break;
-
         }
+    }
 
+    public BuySellResponse buy(int count, Player player, Material material) {
+        count = Utils.addAvailable(player, material, count, false);
+        SignShopEntry data = SignShopModule.instance.settings.getEntryByMaterial(material.toString());
+        double price = data.buyPrice;
+        if (plugin.getEconomy().getBalance(player) >= price * count) {
+            plugin.getEconomy().withdrawPlayer(player, price * count);
+            Utils.addAvailable(player, data.material.parseMaterial(), count, true);
+            return new BuySellResponse(count, price, true);
+        } else {
+            Utils.removeAvailable(player, count, data.material.parseMaterial());
+            return new BuySellResponse(count, price, false);
+        }
+    }
+
+    public BuySellResponse sell(int count, Player player, Material material) {
+        SignShopEntry data = SignShopModule.instance.settings.getEntryByMaterial(material.toString());
+        double price = data.sellPrice;
+        count = Utils.removeAvailable(player, count, material);
+        plugin.getEconomy().depositPlayer(player, price * count);
+        return new BuySellResponse(count, price, true);
 
     }
 
@@ -178,6 +193,14 @@ public class SignShopEvents implements Listener {
                 break;
         }
         session.player.sendSignChange(session.shop.getLocation(), lines);
+    }
+
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class BuySellResponse {
+        public Integer count;
+        public Double price;
+        public Boolean response;
     }
 
     @AllArgsConstructor

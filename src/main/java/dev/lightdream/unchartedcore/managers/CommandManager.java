@@ -29,7 +29,7 @@ public class CommandManager implements CommandExecutor, TabCompleter {
         this.commands = commands;
         plugin.getModules().forEach(module -> {
             if (module.registerCommands() != null) {
-                commands.add(module.registerCommands());
+                commands.addAll(module.registerCommands());
             }
         });
         this.commands.sort(Comparator.comparing(com -> com.aliases.get(0)));

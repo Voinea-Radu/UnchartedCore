@@ -2,12 +2,9 @@ package dev.lightdream.unchartedcore.modules.anvil;
 
 import dev.lightdream.unchartedcore.Main;
 import dev.lightdream.unchartedcore.files.dto.GUIConfig;
-import dev.lightdream.unchartedcore.modules.enchanting.EnchantingCategoryGUI;
-import dev.lightdream.unchartedcore.modules.enchanting.EnchantingGUI;
-import dev.lightdream.unchartedcore.modules.enchanting.EnchantingModule;
-import dev.lightdream.unchartedcore.modules.enchanting.dto.EnchantCategory;
 import dev.lightdream.unchartedcore.utils.ItemBuilder;
 import dev.lightdream.unchartedcore.utils.Utils;
+import dev.lightdream.unchartedcore.utils.init.MessageUtils;
 import fr.minuskube.inv.ClickableItem;
 import fr.minuskube.inv.SmartInventory;
 import fr.minuskube.inv.content.InventoryContents;
@@ -15,6 +12,9 @@ import fr.minuskube.inv.content.InventoryProvider;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.ItemStack;
+
+import java.util.Arrays;
+import java.util.List;
 
 public class AnvilGUI implements InventoryProvider {
 
@@ -43,10 +43,46 @@ public class AnvilGUI implements InventoryProvider {
 
     @Override
     public void update(Player player, InventoryContents contents) {
-        contents.set(Utils.getSlotPosition(config.items.get(0).item.slot), ClickableItem.empty(item1));
-        contents.set(Utils.getSlotPosition(config.items.get(1).item.slot), ClickableItem.empty(ItemBuilder.makeItem(config.items.get(1).item)));
-        contents.set(Utils.getSlotPosition(config.items.get(2).item.slot), ClickableItem.empty(item2));
-        contents.set(Utils.getSlotPosition(config.items.get(3).item.slot), ClickableItem.empty(result));
+        contents.set(Utils.getSlotPosition(config.items.get(0).item.slot), ClickableItem.of(item1, e -> {
+            if (item1 != null) {
+                player.getInventory().addItem(item1);
+                item1 = null;
+                result = null;
+                List<ItemStack> tmp = AnvilModule.instance.events.items.getOrDefault(player, Arrays.asList(null, null));
+                tmp.set(0, null);
+                AnvilModule.instance.events.items.put(player, tmp);
+            }
+
+        }));
+        contents.set(Utils.getSlotPosition(config.items.get(1).item.slot), ClickableItem.of(ItemBuilder.makeItem(config.items.get(1).item), e -> {
+            if (item1 != null) {
+                List<ItemStack> tmp = AnvilModule.instance.events.items.getOrDefault(player, Arrays.asList(null, null));
+                tmp.set(0, null);
+                AnvilModule.instance.events.items.put(player, tmp);
+                AnvilModule.instance.events.toRename.put(player, item1);
+                player.closeInventory();
+                MessageUtils.sendMessage(player, Main.instance.getMessages().typeName);
+            }
+        }));
+        contents.set(Utils.getSlotPosition(config.items.get(2).item.slot), ClickableItem.of(item2, e -> {
+            if (item2 != null) {
+                player.getInventory().addItem(item2);
+                item2 = null;
+                result = null;
+                List<ItemStack> tmp = AnvilModule.instance.events.items.getOrDefault(player, Arrays.asList(null, null));
+                tmp.set(1, null);
+                AnvilModule.instance.events.items.put(player, tmp);
+            }
+        }));
+        contents.set(Utils.getSlotPosition(config.items.get(3).item.slot), ClickableItem.of(result, e -> {
+            if (result != null) {
+                player.getInventory().addItem(result);
+                item1 = null;
+                item2 = null;
+                result = null;
+                AnvilModule.instance.events.items.put(player, Arrays.asList(null, null));
+            }
+        }));
 
     }
 }

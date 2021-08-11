@@ -11,7 +11,6 @@ import fr.minuskube.inv.ClickableItem;
 import fr.minuskube.inv.SmartInventory;
 import fr.minuskube.inv.content.InventoryContents;
 import fr.minuskube.inv.content.InventoryProvider;
-import fr.minuskube.inv.content.SlotPos;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryType;
@@ -25,14 +24,19 @@ import java.util.Optional;
 public class EnchantingCategoryGUI implements InventoryProvider {
 
     private static GUIConfig config;
+    private final int page;
     public ItemStack enchantingItem;
     public List<ItemStack> enchants = new ArrayList<>();
 
-    public static SmartInventory getInventory() {
+    public EnchantingCategoryGUI(int page) {
+        this.page = page;
+    }
+
+    public static SmartInventory getInventory(int page) {
         config = EnchantingModule.instance.settings.guiConfig;
         return SmartInventory.builder()
                 .id(config.id)
-                .provider(new EnchantingCategoryGUI())
+                .provider(new EnchantingCategoryGUI(page))
                 .size(config.rows, config.columns)
                 .title(config.title)
                 .type(InventoryType.valueOf(config.type))
@@ -44,25 +48,18 @@ public class EnchantingCategoryGUI implements InventoryProvider {
     @Override
     public void init(Player player, InventoryContents contents) {
         contents.fill(ClickableItem.empty(ItemBuilder.makeItem(config.fillItem)));
-        if (enchantingItem == null) {
-            for (GUIItem item : config.items) {
-                int row = (item.item.slot + 1) / 9;
-                int column = item.item.slot - row * 9;
-                contents.set(new SlotPos(row, column), null);
-            }
-        } else {
-            int row = (config.items.get(0).item.slot + 1) / 9;
-            int column = config.items.get(0).item.slot - row * 9;
-            contents.set(new SlotPos(row, column), ClickableItem.empty(enchantingItem));
-        }
-
     }
 
     @Override
     public void update(Player player, InventoryContents contents) {
         if (enchantingItem == null) {
-            for (GUIItem item : config.items) {
-                contents.set(Utils.getSlotPosition(item.item.slot), null);
+            for (int i = 0; i < config.items.size(); i++) {
+                if (i != config.items.size() - 1 && i != config.items.size() - 2) {
+                    contents.set(Utils.getSlotPosition(config.items.get(i).item.slot), null);
+                }
+            }
+            if (enchantingItem != null) {
+                contents.set(Utils.getSlotPosition(config.items.get(0).item.slot), ClickableItem.empty(enchantingItem));
             }
         } else {
             List<EnchantCategory> categories = EnchantingModule.instance.settings.getEnchantCategories(enchantingItem.getType().toString());
@@ -76,23 +73,46 @@ public class EnchantingCategoryGUI implements InventoryProvider {
                             player.getInventory().addItem(enchantingItem);
                             EnchantingModule.instance.events.items.remove(player);
                             player.closeInventory();
-                            getInventory().open(player);
+                            getInventory(0).open(player);
+                        }));
+                    }
+                } else if (i == config.items.size() - 2) {
+                    if (page != 0) {
+                        contents.set(Utils.getSlotPosition(item.item.slot), ClickableItem.of(ItemBuilder.makeItem(item.item), e -> {
+                            EnchantingModule.instance.events.items.remove(player);
+                            getInventory(page - 1).open(player);
+                            Optional<SmartInventory> inventory = Main.instance.getInventoryManager().getInventory(player);
+                            ((EnchantingCategoryGUI) inventory.get().getProvider()).enchantingItem = enchantingItem;
+                            Bukkit.getScheduler().runTaskLater(Main.instance, () -> {
+                                EnchantingModule.instance.events.items.put(player, enchantingItem);
+                            }, 1);
+                        }));
+                    }
+                } else if (i == config.items.size() - 1) {
+                    if ((page + 1) * (config.items.size() - 3) < categories.size()) {
+                        contents.set(Utils.getSlotPosition(item.item.slot), ClickableItem.of(ItemBuilder.makeItem(item.item), e -> {
+                            EnchantingModule.instance.events.items.remove(player);
+                            getInventory(page + 1).open(player);
+                            Optional<SmartInventory> inventory = Main.instance.getInventoryManager().getInventory(player);
+                            ((EnchantingCategoryGUI) inventory.get().getProvider()).enchantingItem = enchantingItem;
+                            Bukkit.getScheduler().runTaskLater(Main.instance, () -> {
+                                EnchantingModule.instance.events.items.put(player, enchantingItem);
+                            }, 1);
                         }));
                     }
                 } else {
-                    if (categories.size() >= i) {
-                        EnchantCategory category = categories.get(i - 1);
+                    if (categories.size() >= i + page * (config.items.size() - 3)) {
+                        EnchantCategory category = categories.get(i + page * (config.items.size() - 3) - 1);
                         contents.set(Utils.getSlotPosition(item.item.slot), ClickableItem.of(getBook(category), e -> {
                             EnchantingModule.instance.events.items.remove(player);
-                            EnchantingGUI.getInventory().open(player);
+                            EnchantingGUI.getInventory(0).open(player);
                             Optional<SmartInventory> inventory = Main.instance.getInventoryManager().getInventory(player);
                             if (inventory.isPresent()) {
                                 ((EnchantingGUI) inventory.get().getProvider()).category = category;
                                 ((EnchantingGUI) inventory.get().getProvider()).enchantingItem = enchantingItem;
                                 Bukkit.getScheduler().runTaskLater(Main.instance, () -> {
-                                    System.out.println("Adding back the item " + enchantingItem);
                                     EnchantingModule.instance.events.items.put(player, enchantingItem);
-                                }, 2);
+                                }, 1);
                             }
                         }));
                     } else {

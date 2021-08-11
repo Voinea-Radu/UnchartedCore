@@ -63,7 +63,7 @@ public class EnchantingEvents implements Listener {
             return;
         }
         event.setCancelled(true);
-        EnchantingCategoryGUI.getInventory().open(player);
+        EnchantingCategoryGUI.getInventory(0).open(player);
 
 
     }
@@ -86,9 +86,21 @@ public class EnchantingEvents implements Listener {
             InventoryProvider provider = inventory.get().getProvider();
             if (provider instanceof EnchantingCategoryGUI) {
                 if (allowed) {
-                    event.setCurrentItem(null);
-                    ((EnchantingCategoryGUI) inventory.get().getProvider()).enchantingItem = item;
-                    items.put(player, item);
+                    EnchantingCategoryGUI gui = ((EnchantingCategoryGUI) inventory.get().getProvider());
+                    if (gui.enchantingItem == null) {
+                        if (item.getAmount() > 1) {
+                            gui.enchantingItem = item.clone();
+                            gui.enchantingItem.setAmount(1);
+                            items.put(player, gui.enchantingItem);
+                            item.setAmount(item.getAmount() - 1);
+                            event.setCurrentItem(item);
+                            event.setCancelled(true);
+                        } else {
+                            gui.enchantingItem = item;
+                            items.put(player, item);
+                            event.setCurrentItem(null);
+                        }
+                    }
                 } else {
                     event.setCancelled(true);
                 }
@@ -97,7 +109,7 @@ public class EnchantingEvents implements Listener {
     }
 
     @EventHandler
-    public void onStopEnchanting(InventoryCloseEvent event) {
+    public void onEnchantingLeave(InventoryCloseEvent event) {
         Player player = (Player) event.getPlayer();
         InventoryView inventoryView = player.getOpenInventory();
         if (inventoryView.getTitle().equals(Utils.color(EnchantingModule.instance.settings.guiConfig.title))) {

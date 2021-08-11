@@ -3,10 +3,7 @@ package dev.lightdream.unchartedcore.modules.customEnchants;
 import dev.lightdream.unchartedcore.Main;
 import dev.lightdream.unchartedcore.commands.Command;
 import dev.lightdream.unchartedcore.modules.CoreModule;
-import dev.lightdream.unchartedcore.modules.customEnchants.enchants.AntiDepthStrider;
-import dev.lightdream.unchartedcore.modules.customEnchants.enchants.CactusProtection;
-import dev.lightdream.unchartedcore.modules.customEnchants.enchants.ComboBoost;
-import dev.lightdream.unchartedcore.modules.customEnchants.enchants.Critical;
+import dev.lightdream.unchartedcore.modules.customEnchants.enchants.*;
 import dev.lightdream.unchartedcore.utils.Utils;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.enchantments.EnchantmentTarget;
@@ -16,6 +13,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class CustomEnchantsModule extends CoreModule {
@@ -26,6 +24,9 @@ public class CustomEnchantsModule extends CoreModule {
     public Enchantment comboBoost;
     public Enchantment antiDepthStrider;
     public Enchantment critical;
+    public HashMap<String, Enchantment> potionEnchants = new HashMap<>();
+
+    public List<Enchantment> customEnchantments = new ArrayList<>();
 
     public CustomEnchantsConfig settings;
 
@@ -66,7 +67,7 @@ public class CustomEnchantsModule extends CoreModule {
     }
 
     @Override
-    public Command registerCommands() {
+    public List<Command> registerCommands() {
         return null;
     }
 
@@ -77,10 +78,18 @@ public class CustomEnchantsModule extends CoreModule {
         antiDepthStrider = new AntiDepthStrider(CustomEnchantsModule.instance.settings.antiDepthStrider.id);
         critical = new Critical(CustomEnchantsModule.instance.settings.critical.id);
 
-        registerEnchant(cactusProtection);
-        registerEnchant(comboBoost);
-        registerEnchant(antiDepthStrider);
-        registerEnchant(critical);
+        settings.potions.forEach(potion -> {
+            Enchantment enchantment = new Potion(potion.enchantSettings.id, potion.enchantSettings.name, potion.enchantSettings.maxLevel, potion.enchantSettings.target);
+            customEnchantments.add(enchantment);
+            potionEnchants.put(potion.potion, enchantment);
+        });
+
+        customEnchantments.add(cactusProtection);
+        customEnchantments.add(comboBoost);
+        customEnchantments.add(antiDepthStrider);
+        customEnchantments.add(critical);
+
+        customEnchantments.forEach(this::registerEnchant);
     }
 
     @Override
@@ -123,6 +132,20 @@ public class CustomEnchantsModule extends CoreModule {
             case "CRITICAL":
                 return critical;
         }
+        for (String potion : potionEnchants.keySet()) {
+            if(potion.equals(name)){
+                return potionEnchants.get(potion);
+            }
+        }
         return null;
+    }
+
+    public boolean isCustom(Enchantment enchantment) {
+        for (Enchantment customEnchantment : customEnchantments) {
+            if (customEnchantment.getName().equals(enchantment.getName())) {
+                return true;
+            }
+        }
+        return false;
     }
 }

@@ -45,7 +45,7 @@ public class AntiDepthStrider extends Enchantment {
                     return true;
                 }
             } else {
-                if (item.getType().toString().equals(target)) {
+                if (item.getType().toString().contains(target)) {
                     return true;
                 }
             }

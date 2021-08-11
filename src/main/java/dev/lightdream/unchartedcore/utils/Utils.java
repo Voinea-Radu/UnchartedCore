@@ -133,9 +133,25 @@ public class Utils {
     }
 
     public static SlotPos getSlotPosition(int slot) {
-        int row = (slot + 1) / 9;
-        int column = slot - row * 9;
-        return new SlotPos(row, column);
+        /*
+        #########
+        #########
+        #########
+        #########
+        #########
+        #########
+        10
+         */
+
+        slot++;
+        int row = slot / 9; //6
+        int column = slot % 9;
+        if (column == 0) {
+            column = 9;
+            row--;
+        }
+        return new SlotPos(row, column - 1);
     }
+
 
 }

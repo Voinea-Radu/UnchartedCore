@@ -7,6 +7,9 @@ import dev.lightdream.unchartedcore.modules.CoreModule;
 import dev.lightdream.unchartedcore.utils.init.DatabaseUtils;
 import org.bukkit.event.Listener;
 
+import java.util.Arrays;
+import java.util.List;
+
 public class SignShopModule extends CoreModule {
 
     public static SignShopModule instance;
@@ -24,8 +27,11 @@ public class SignShopModule extends CoreModule {
     }
 
     @Override
-    public Command registerCommands() {
-        return new SignShopCommand(plugin, this);
+    public List<Command> registerCommands() {
+        return Arrays.asList(
+                new SignShopCommand(plugin),
+                new SellCommand(plugin)
+        );
     }
 
     @Override

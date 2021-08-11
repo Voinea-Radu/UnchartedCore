@@ -4,6 +4,8 @@ import dev.lightdream.unchartedcore.Main;
 import dev.lightdream.unchartedcore.commands.Command;
 import org.bukkit.event.Listener;
 
+import java.util.List;
+
 public abstract class CoreModule {
 
     public Main plugin;
@@ -16,7 +18,7 @@ public abstract class CoreModule {
 
     public abstract Listener registerEventListeners();
 
-    public abstract Command registerCommands();
+    public abstract List<Command> registerCommands();
 
     public abstract void enable();
 

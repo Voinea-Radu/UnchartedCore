@@ -38,5 +38,8 @@ public class Messages {
     public String signShopNotEnoughMoney = "Not enough money";
     public String signShopNotEnoughItems = "Not enough items";
 
+    //Anvils
+    public String typeName= "Please type your new name.";
+
 
 }

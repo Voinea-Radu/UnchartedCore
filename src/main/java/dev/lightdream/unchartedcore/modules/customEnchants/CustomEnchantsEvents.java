@@ -1,6 +1,7 @@
 package dev.lightdream.unchartedcore.modules.customEnchants;
 
 import dev.lightdream.unchartedcore.Main;
+import dev.lightdream.unchartedcore.modules.customEnchants.dto.CustomEnchant;
 import dev.lightdream.unchartedcore.utils.Utils;
 import lombok.AllArgsConstructor;
 import org.bukkit.enchantments.Enchantment;
@@ -117,6 +118,24 @@ public class CustomEnchantsEvents implements Listener {
             event.setDamage(damage + boost);
         }
 
+    }
+
+    @EventHandler
+    public void onPotionSpell(EntityDamageByEntityEvent event) {
+        List<Player> players = getPlayers(event);
+        if (players == null) {
+            return;
+        }
+        Player damager = players.get(0);
+        Player player = players.get(1);
+
+        CustomEnchantsModule.instance.potionEnchants.forEach((potion, enchantment) -> {
+            CustomEnchant enchantSettings = CustomEnchantsModule.instance.settings.getPotionEnchant(potion).enchantSettings;
+            EnchantCheck check = checkEnchant(damager, enchantment, enchantSettings.chance);
+            if (check.use) {
+                player.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 20 * Integer.parseInt(enchantSettings.args.get(0)) * check.level, Integer.parseInt(enchantSettings.args.get(1)) * check.level), true);
+            }
+        });
     }
 
 

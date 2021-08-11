@@ -79,4 +79,17 @@ public class Item {
         return item;
     }
 
+
+    @Override
+    public String toString() {
+        return "Item{" +
+                "material=" + material +
+                ", amount=" + amount +
+                ", displayName='" + displayName + '\'' +
+                ", headData='" + headData + '\'' +
+                ", headOwner='" + headOwner + '\'' +
+                ", lore=" + lore +
+                ", slot=" + slot +
+                '}';
+    }
 }

@@ -14,6 +14,8 @@ import fr.minuskube.inv.ClickableItem;
 import fr.minuskube.inv.SmartInventory;
 import fr.minuskube.inv.content.InventoryContents;
 import fr.minuskube.inv.content.InventoryProvider;
+import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryType;
@@ -21,18 +23,24 @@ import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class EnchantingGUI implements InventoryProvider {
 
     private static GUIConfig config;
     public ItemStack enchantingItem;
     public EnchantCategory category;
+    private final int page;
 
-    public static SmartInventory getInventory() {
+    public EnchantingGUI(int page){
+        this.page = page;
+    }
+
+    public static SmartInventory getInventory(int page) {
         config = EnchantingModule.instance.settings.guiConfig;
         return SmartInventory.builder()
                 .id(config.id)
-                .provider(new EnchantingGUI())
+                .provider(new EnchantingGUI(page))
                 .size(config.rows, config.columns)
                 .title(config.title)
                 .type(InventoryType.valueOf(config.type))
@@ -62,15 +70,42 @@ public class EnchantingGUI implements InventoryProvider {
                     player.getInventory().addItem(enchantingItem);
                     EnchantingModule.instance.events.items.remove(player);
                     player.closeInventory();
-                    EnchantingCategoryGUI.getInventory().open(player);
+                    EnchantingCategoryGUI.getInventory(0).open(player);
                 }));
-            } else {
-                if (category.enchants.size() >= i) {
-                    Enchant enchant = category.enchants.get(i - 1);
+            } else if (i == config.items.size() - 2) {
+                if (page != 0) {
+                    contents.set(Utils.getSlotPosition(item.item.slot), ClickableItem.of(ItemBuilder.makeItem(item.item), e -> {
+                        EnchantingModule.instance.events.items.remove(player);
+                        getInventory(page - 1).open(player);
+                        Optional<SmartInventory> inventory = Main.instance.getInventoryManager().getInventory(player);
+                        ((EnchantingCategoryGUI) inventory.get().getProvider()).enchantingItem = enchantingItem;
+                        Bukkit.getScheduler().runTaskLater(Main.instance, () -> {
+                            EnchantingModule.instance.events.items.put(player, enchantingItem);
+                        }, 1);
+                    }));
+                }
+            } else if (i == config.items.size() - 1) {
+                if ((page + 1) * (config.items.size() - 3) < category.enchants.size()) {
+                    contents.set(Utils.getSlotPosition(item.item.slot), ClickableItem.of(ItemBuilder.makeItem(item.item), e -> {
+                        EnchantingModule.instance.events.items.remove(player);
+                        getInventory(page + 1).open(player);
+                        Optional<SmartInventory> inventory = Main.instance.getInventoryManager().getInventory(player);
+                        ((EnchantingCategoryGUI) inventory.get().getProvider()).enchantingItem = enchantingItem;
+                        Bukkit.getScheduler().runTaskLater(Main.instance, () -> {
+                            EnchantingModule.instance.events.items.put(player, enchantingItem);
+                        }, 1);
+                    }));
+                }
+            }else {
+                if (category.enchants.size() >= i + page * (config.items.size() - 3)) {
+                    Enchant enchant = category.enchants.get(i + page * (config.items.size() - 3) - 1);
                     contents.set(Utils.getSlotPosition(item.item.slot), ClickableItem.of(getBook(enchant), e -> {
                         if (XPUtils.getTotalExperience(player) >= enchant.cost) {
                             XPUtils.setTotalExperience(player, XPUtils.getTotalExperience(player) - enchant.cost);
                             Enchantment enchantment = Enchantment.getByName(enchant.enchant);
+                            if (enchantingItem.getType().equals(Material.BOOK)) {
+                                enchantingItem.setType(Material.ENCHANTED_BOOK);
+                            }
                             if (enchantment == null) {
                                 enchantment = CustomEnchantsModule.instance.getCustomEnchantment(enchant.enchant);
                                 CustomEnchantsModule.enchantItem(enchantingItem, enchantment, enchant.level, false);
