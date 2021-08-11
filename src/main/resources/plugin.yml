@@ -1,0 +1,9 @@
+name: UnchartedCore
+version: ${project.version}
+main: dev.lightdream.unchartedcore.Main
+authors: [ L1ghtDream ]
+depend: [Vault, PlaceholderAPI]
+website: https://lightdream.tk
+commands:
+  uc:
+    description: NA
