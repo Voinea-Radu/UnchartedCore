@@ -18,10 +18,13 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.SignChangeEvent;
+import org.bukkit.event.player.AsyncPlayerChatEvent;
+import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
@@ -118,6 +121,21 @@ public class SignShopEvents implements Listener {
                 response = sell(count, player, data.material.parseMaterial());
                 setSessionSign(player, signShop, response.count * response.price);
                 break;
+        }
+    }
+
+    @EventHandler()
+    public void onSellCommandSend(PlayerCommandPreprocessEvent event) {
+        Player player = event.getPlayer();
+        String message = event.getMessage();
+        System.out.println(message);
+        String[] parts = message.split(" ");
+        if (parts[0].equals("/sell")) {
+            event.setCancelled(true);
+            if (parts.length == 1) {
+                return;
+            }
+            SignShopModule.instance.sellCommand.execute(player, Arrays.asList(parts[1]));
         }
     }
 

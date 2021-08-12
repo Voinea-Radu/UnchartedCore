@@ -8,7 +8,9 @@ import com.j256.ormlite.support.ConnectionSource;
 import com.j256.ormlite.support.DatabaseConnection;
 import com.j256.ormlite.table.TableUtils;
 import dev.lightdream.unchartedcore.Main;
+import dev.lightdream.unchartedcore.databases.PlayerHead;
 import dev.lightdream.unchartedcore.databases.SignShop;
+import dev.lightdream.unchartedcore.databases.StatSign;
 import dev.lightdream.unchartedcore.databases.User;
 import dev.lightdream.unchartedcore.files.config.SQL;
 import lombok.Getter;
@@ -19,7 +21,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.sql.SQLException;
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -34,11 +36,17 @@ public class DatabaseUtils {
 
     private static Dao<User, UUID> userDao;
     private static Dao<SignShop, Integer> signShopDao;
+    private static Dao<StatSign, Integer> statSignDao;
+    private static Dao<PlayerHead, Integer> playerHeadDao;
 
     @Getter
     private static List<User> userList;
     @Getter
     private static List<SignShop> signShopList;
+    @Getter
+    private static List<StatSign> statSignsList;
+    @Getter
+    private static List<PlayerHead> playerHeadList;
 
     public static void init(Main main) throws SQLException {
         plugin = main;
@@ -54,15 +62,23 @@ public class DatabaseUtils {
 
         TableUtils.createTableIfNotExists(connectionSource, User.class);
         TableUtils.createTableIfNotExists(connectionSource, SignShop.class);
+        TableUtils.createTableIfNotExists(connectionSource, PlayerHead.class);
+        TableUtils.createTableIfNotExists(connectionSource, StatSign.class);
 
         userDao = DaoManager.createDao(connectionSource, User.class);
         signShopDao = DaoManager.createDao(connectionSource, SignShop.class);
+        playerHeadDao = DaoManager.createDao(connectionSource, PlayerHead.class);
+        statSignDao = DaoManager.createDao(connectionSource, StatSign.class);
 
         userDao.setAutoCommit(getDatabaseConnection(), false);
         signShopDao.setAutoCommit(getDatabaseConnection(), false);
+        playerHeadDao.setAutoCommit(getDatabaseConnection(), false);
+        statSignDao.setAutoCommit(getDatabaseConnection(), false);
 
         userList = getUsers();
         signShopList = getSignShops();
+        playerHeadList = getPlayerHeads();
+        statSignsList = getStatSigns();
     }
 
     private @NotNull
@@ -94,19 +110,35 @@ public class DatabaseUtils {
         } catch (SQLException exception) {
             exception.printStackTrace();
         }
-        return Collections.emptyList();
+        return new ArrayList<>();
     }
 
-    public @NotNull
-    static List<SignShop> getSignShops() {
+    private static @NotNull List<SignShop> getSignShops() {
         try {
             return signShopDao.queryForAll();
         } catch (SQLException exception) {
             exception.printStackTrace();
         }
-        return Collections.emptyList();
+        return new ArrayList<>();
     }
 
+    private static @NotNull List<PlayerHead> getPlayerHeads() {
+        try {
+            return playerHeadDao.queryForAll();
+        } catch (SQLException exception) {
+            exception.printStackTrace();
+        }
+        return new ArrayList<>();
+    }
+
+    private static @NotNull List<StatSign> getStatSigns() {
+        try {
+            return statSignDao.queryForAll();
+        } catch (SQLException exception) {
+            exception.printStackTrace();
+        }
+        return new ArrayList<>();
+    }
 
     public static void saveUsers() {
         try {
@@ -130,8 +162,32 @@ public class DatabaseUtils {
         }
     }
 
+    public static void savePlayerHeads() {
+        try {
+            for (PlayerHead playerHead : playerHeadList) {
+                playerHeadDao.createOrUpdate(playerHead);
+            }
+            playerHeadDao.commit(getDatabaseConnection());
+        } catch (SQLException exception) {
+            exception.printStackTrace();
+        }
+    }
+
+    public static void saveStatSigns() {
+        System.out.println("Saving stat signs");
+        try {
+            for (StatSign statSign : statSignsList) {
+                statSignDao.createOrUpdate(statSign);
+            }
+            statSignDao.commit(getDatabaseConnection());
+        } catch (SQLException exception) {
+            exception.printStackTrace();
+        }
+    }
+
+
     public static @NotNull User getUser(@NotNull UUID uuid) {
-        Optional<User> optionalUser = getUserList().stream().filter(user -> user.uuid.equals(uuid)).findFirst();
+        Optional<User> optionalUser = userList.stream().filter(user -> user.uuid.equals(uuid)).findFirst();
 
         if (optionalUser.isPresent()) {
             return optionalUser.get();
@@ -143,14 +199,32 @@ public class DatabaseUtils {
     }
 
     public static @Nullable User getUser(@NotNull String name) {
-        Optional<User> optionalUser = getUserList().stream().filter(user -> user.name.equals(name)).findFirst();
+        Optional<User> optionalUser = userList.stream().filter(user -> user.name.equals(name)).findFirst();
 
         return optionalUser.orElse(null);
     }
 
     public static @Nullable SignShop getSignShop(@NotNull Location location) {
-        Optional<SignShop> optionalSignShop = getSignShopList().stream().filter(signShop -> signShop.getLocation().equals(location)).findFirst();
+        Optional<SignShop> optionalSignShop = signShopList.stream().filter(signShop -> signShop.getLocation().equals(location)).findFirst();
 
         return optionalSignShop.orElse(null);
+    }
+
+    public static @Nullable PlayerHead getPlayerHead(int id) {
+        Optional<PlayerHead> optionalPlayerHead = playerHeadList.stream().filter(playerHead -> playerHead.id == id).findFirst();
+
+        return optionalPlayerHead.orElse(null);
+    }
+
+    public static @Nullable PlayerHead getPlayerHead(Location location) {
+        Optional<PlayerHead> optionalPlayerHead = playerHeadList.stream().filter(playerHead -> playerHead.onLocation(location)).findFirst();
+
+        return optionalPlayerHead.orElse(null);
+    }
+
+    public static @Nullable StatSign getStatSign(@NotNull Location location) {
+        Optional<StatSign> optionalStatSign = statSignsList.stream().filter(statSign -> statSign.getLocation().equals(location)).findFirst();
+
+        return optionalStatSign.orElse(null);
     }
 }

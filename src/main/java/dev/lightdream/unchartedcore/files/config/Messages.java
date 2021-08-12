@@ -15,6 +15,7 @@ public class Messages {
     public String mustBeConsole = "You must be console to use this command.";
     public String noPermission = "You do not have the permission to use this command.";
     public String unknownCommand = "This is not a valid command.";
+    public String invalidUser = "This is an invalid user";
 
     //Leave empty for auto-generated
     public List<String> helpCommand = new ArrayList<>();
@@ -37,9 +38,22 @@ public class Messages {
     public String signShopDeletedSessionStopped = "You have exited the sign shop delete session";
     public String signShopNotEnoughMoney = "Not enough money";
     public String signShopNotEnoughItems = "Not enough items";
+    public String sold = "You have sold %amount% items for $%price%";
 
     //Anvils
-    public String typeName= "Please type your new name.";
+    public String typeName = "Please type your new name.";
 
+    //PlayerHeads
+    public String invalidHead = "This is not a valid player head";
+    public String cannotSellOwnHead = "You can not sell your own head";
+    public String soldHead = "Sold the head for";
+
+    //Stats
+    public String statsSignInfoLine = "TOP";
+    public String statsSignStatLine = "%stat%";
+    public String statsSignPlayerLine = "%player%";
+    public String statsSignValueLine = "%value%";
+    public String statSignCreated = "Stat Sign created";
+    public String statSignRemoved = "Stat Sign removed";
 
 }

@@ -2,8 +2,10 @@ package dev.lightdream.unchartedcore.modules.signshop;
 
 import dev.lightdream.unchartedcore.Main;
 import dev.lightdream.unchartedcore.commands.Command;
+import dev.lightdream.unchartedcore.utils.init.MessageUtils;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collections;
@@ -24,17 +26,23 @@ public class SellCommand extends Command {
             return;
         }
         Player player = (Player) sender;
+        ItemStack item = player.getItemInHand();
+        if (item == null) {
+            return;
+        }
+        SignShopEvents.BuySellResponse response;
         switch (args.get(0)) {
             case "hand":
-                SignShopModule.instance.events.sell(player.getItemInHand().getAmount(), player, player.getItemInHand().getType());
+                response = SignShopModule.instance.events.sell(player.getItemInHand().getAmount(), player, player.getItemInHand().getType());
                 break;
             case "all":
-                SignShopModule.instance.events.sell(1000000, player, player.getItemInHand().getType());
+                response = SignShopModule.instance.events.sell(1000000, player, player.getItemInHand().getType());
                 break;
             default:
                 sendUsage(sender);
-                break;
+                return;
         }
+        MessageUtils.sendMessage(player, plugin.getMessages().sold.replace("%amount%", String.valueOf(response.count)).replace("%price%", String.valueOf(response.price)));
     }
 
     @Override

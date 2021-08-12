@@ -1,6 +1,9 @@
 package dev.lightdream.unchartedcore.managers;
 
 import dev.lightdream.unchartedcore.Main;
+import dev.lightdream.unchartedcore.databases.User;
+import dev.lightdream.unchartedcore.modules.stats.StatsModule;
+import dev.lightdream.unchartedcore.utils.init.DatabaseUtils;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import org.bukkit.OfflinePlayer;
 import org.jetbrains.annotations.NotNull;
@@ -41,7 +44,20 @@ public class PAPI extends PlaceholderExpansion {
             return null;
         }
 
-        //Placeholders
+        User user = DatabaseUtils.getUser(player.getUniqueId());
+
+        switch (identifier){
+            case "kills":
+                return StatsModule.instance.events.getStat(user, "Kills", true);
+            case "deaths":
+                return StatsModule.instance.events.getStat(user, "Deaths", true);
+            case "onlineTime":
+                return StatsModule.instance.events.getStat(user, "Online Time", true);
+            case "traveled":
+                return StatsModule.instance.events.getStat(user, "Traveled", true);
+            case "joinDate":
+                return StatsModule.instance.events.getStat(user, "Join Date", true);
+        }
 
         return null;
     }

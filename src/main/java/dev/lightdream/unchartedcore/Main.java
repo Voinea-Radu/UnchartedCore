@@ -12,7 +12,9 @@ import dev.lightdream.unchartedcore.modules.CoreModule;
 import dev.lightdream.unchartedcore.modules.anvil.AnvilModule;
 import dev.lightdream.unchartedcore.modules.customEnchants.CustomEnchantsModule;
 import dev.lightdream.unchartedcore.modules.enchanting.EnchantingModule;
+import dev.lightdream.unchartedcore.modules.playerHeads.PlayerHeadsModule;
 import dev.lightdream.unchartedcore.modules.signshop.SignShopModule;
+import dev.lightdream.unchartedcore.modules.stats.StatsModule;
 import dev.lightdream.unchartedcore.utils.init.DatabaseUtils;
 import dev.lightdream.unchartedcore.utils.init.MessageUtils;
 import fr.minuskube.inv.InventoryManager;
@@ -50,11 +52,6 @@ public final class Main extends JavaPlugin {
     private Messages messages;
     private GUIs GUIs;
     private SQL sql;
-    //Modules
-    private SignShopModule signShopModule;
-    private EnchantingModule enchantingModule;
-    private CustomEnchantsModule customEnchantsModule;
-    private AnvilModule anvilModule;
 
     @Override
     public void onEnable() {
@@ -65,15 +62,12 @@ public final class Main extends JavaPlugin {
         fileManager = new FileManager(this, FileManager.PersistType.YAML);
 
         //Modules
-        signShopModule = new SignShopModule(this);
-        enchantingModule = new EnchantingModule(this);
-        customEnchantsModule = new CustomEnchantsModule(this);
-        anvilModule = new AnvilModule(this);
-
-        modules.add(signShopModule);
-        modules.add(enchantingModule);
-        modules.add(customEnchantsModule);
-        modules.add(anvilModule);
+        modules.add(new SignShopModule(this));
+        modules.add(new EnchantingModule(this));
+        modules.add(new CustomEnchantsModule(this));
+        modules.add(new AnvilModule(this));
+        modules.add(new PlayerHeadsModule(this));
+        modules.add(new StatsModule(this));
 
         //Configs
         loadConfigs();

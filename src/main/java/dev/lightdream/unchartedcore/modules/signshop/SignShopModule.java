@@ -15,6 +15,7 @@ public class SignShopModule extends CoreModule {
     public static SignShopModule instance;
     public SignShopConfig settings;
     public SignShopEvents events;
+    public SellCommand sellCommand;
 
     public SignShopModule(Main plugin) {
         super(plugin, "SignShopModule");
@@ -30,13 +31,16 @@ public class SignShopModule extends CoreModule {
     public List<Command> registerCommands() {
         return Arrays.asList(
                 new SignShopCommand(plugin),
-                new SellCommand(plugin)
+                sellCommand
         );
     }
 
     @Override
     public void enable() {
         this.events = new SignShopEvents(plugin);
+
+        sellCommand = new SellCommand(plugin);
+
         loadSighShops();
     }
 
