@@ -174,7 +174,6 @@ public class DatabaseUtils {
     }
 
     public static void saveStatSigns() {
-        System.out.println("Saving stat signs");
         try {
             for (StatSign statSign : statSignsList) {
                 statSignDao.createOrUpdate(statSign);

@@ -47,7 +47,6 @@ public class StatsModule extends CoreModule {
     }
 
     public void processSigns(){
-        System.out.println(DatabaseUtils.getStatSignsList());
         DatabaseUtils.getStatSignsList().forEach(StatSign::process);
     }
 }

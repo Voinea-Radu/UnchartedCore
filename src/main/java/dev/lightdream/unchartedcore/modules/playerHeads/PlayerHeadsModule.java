@@ -26,7 +26,10 @@ public class PlayerHeadsModule extends CoreModule {
 
     @Override
     public List<Command> registerCommands() {
-        return Arrays.asList(new SellHeadCommand(plugin));
+        return Arrays.asList(
+                new SellHeadCommand(plugin),
+                new HeadsCommand(plugin)
+        );
     }
 
     @Override

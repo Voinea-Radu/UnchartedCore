@@ -27,6 +27,8 @@ public class User {
     public Double traveledDistance;
     @DatabaseField(columnName = "join_date")
     public Long joinDate;
+    @DatabaseField(columnName = "head_sold")
+    public int headSold;
 
     public User(UUID uuid, String name) {
         this.uuid = uuid;
@@ -36,6 +38,7 @@ public class User {
         this.onlineTime = 0L;
         this.traveledDistance = 0.0;
         this.joinDate = System.currentTimeMillis();
+        this.headSold = 0;
     }
 
 }

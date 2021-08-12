@@ -128,7 +128,6 @@ public class SignShopEvents implements Listener {
     public void onSellCommandSend(PlayerCommandPreprocessEvent event) {
         Player player = event.getPlayer();
         String message = event.getMessage();
-        System.out.println(message);
         String[] parts = message.split(" ");
         if (parts[0].equals("/sell")) {
             event.setCancelled(true);

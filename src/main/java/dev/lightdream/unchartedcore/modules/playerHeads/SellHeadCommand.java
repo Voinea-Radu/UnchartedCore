@@ -28,25 +28,21 @@ public class SellHeadCommand extends Command {
         Player player = (Player) sender;
         ItemStack item = player.getItemInHand();
         if (item == null) {
-            System.out.println("1");
             MessageUtils.sendMessage(player, plugin.getMessages().invalidHead);
             return;
         }
         Double dId = ((Double) NbtUtils.getNBT(item, "id"));
         if (dId == null) {
-            System.out.println("2");
             MessageUtils.sendMessage(player, plugin.getMessages().invalidHead);
             return;
         }
         int id = (int) Math.floor(dId);
         PlayerHead ph = DatabaseUtils.getPlayerHead(id);
         if (ph == null) {
-            System.out.println("3");
             MessageUtils.sendMessage(player, plugin.getMessages().invalidHead);
             return;
         }
         if (ph.owner.equals(player.getUniqueId())) {
-            System.out.println("4");
             MessageUtils.sendMessage(player, plugin.getMessages().cannotSellOwnHead);
             return;
         }
@@ -55,6 +51,7 @@ public class SellHeadCommand extends Command {
         plugin.getEconomy().depositPlayer(player, price);
         DatabaseUtils.getPlayerHeadList().remove(ph);
         player.setItemInHand(null);
+        DatabaseUtils.getUser(ph.owner).headSold++;
     }
 
     @Override

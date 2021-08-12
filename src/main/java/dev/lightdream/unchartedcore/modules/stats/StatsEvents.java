@@ -77,7 +77,6 @@ public class StatsEvents implements Listener {
         Player player = event.getPlayer();
         User user = DatabaseUtils.getUser(player.getUniqueId());
         user.onlineTime += System.currentTimeMillis() - joinTime.get(player);
-        System.out.println("Adding  " + (System.currentTimeMillis() - joinTime.get(player)) + " to player " + player.getName());
     }
 
     @EventHandler
@@ -124,10 +123,8 @@ public class StatsEvents implements Listener {
 
 
     public void calculateTop() {
-        System.out.println("Started calculating top");
         stats.forEach(this::calculateTop);
         StatsModule.instance.processSigns();
-        System.out.println("Finished calculating top");
     }
 
     public void calculateTop(String stat) {

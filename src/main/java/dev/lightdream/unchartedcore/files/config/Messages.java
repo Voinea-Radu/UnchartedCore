@@ -47,6 +47,7 @@ public class Messages {
     public String invalidHead = "This is not a valid player head";
     public String cannotSellOwnHead = "You can not sell your own head";
     public String soldHead = "Sold the head for";
+    public String soldTimes = "This head has been sold %count% times";
 
     //Stats
     public String statsSignInfoLine = "TOP";
