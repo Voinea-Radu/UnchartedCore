@@ -13,6 +13,7 @@ import dev.lightdream.unchartedcore.modules.anvil.AnvilModule;
 import dev.lightdream.unchartedcore.modules.customEnchants.CustomEnchantsModule;
 import dev.lightdream.unchartedcore.modules.enchanting.EnchantingModule;
 import dev.lightdream.unchartedcore.modules.homes.HomesModule;
+import dev.lightdream.unchartedcore.modules.mounts.MountsModule;
 import dev.lightdream.unchartedcore.modules.playerHeads.PlayerHeadsModule;
 import dev.lightdream.unchartedcore.modules.signshop.SignShopModule;
 import dev.lightdream.unchartedcore.modules.silkSpawners.SilkSpawnersModule;
@@ -77,6 +78,7 @@ public final class Main extends JavaPlugin {
         modules.add(new SilkSpawnersModule(this));
         modules.add(new HomesModule(this));
         modules.add(new WarZoneClaimsModule(this));
+        modules.add(new MountsModule(this));
 
         //Configs
         loadConfigs();
