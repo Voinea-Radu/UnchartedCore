@@ -8,13 +8,18 @@ import org.bukkit.event.Listener;
 import java.util.List;
 
 public class CombatLogModule extends CoreModule {
+
+    public static CombatLogModule instance;
+    public CombatLogConfig settings;
+
     public CombatLogModule(Main plugin) {
         super(plugin, "CombatLogModule");
+        instance = this;
     }
 
     @Override
     public Listener registerEventListeners() {
-        return null;
+        return new CombatLogEvents();
     }
 
     @Override
@@ -34,6 +39,6 @@ public class CombatLogModule extends CoreModule {
 
     @Override
     public void loadConfigs() {
-
+        settings = plugin.getFileManager().load(CombatLogConfig.class);
     }
 }
