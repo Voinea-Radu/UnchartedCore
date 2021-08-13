@@ -17,6 +17,7 @@ import dev.lightdream.unchartedcore.modules.playerHeads.PlayerHeadsModule;
 import dev.lightdream.unchartedcore.modules.signshop.SignShopModule;
 import dev.lightdream.unchartedcore.modules.silkSpawners.SilkSpawnersModule;
 import dev.lightdream.unchartedcore.modules.stats.StatsModule;
+import dev.lightdream.unchartedcore.modules.warZoneClaims.WarZoneClaimsModule;
 import dev.lightdream.unchartedcore.utils.init.DatabaseUtils;
 import dev.lightdream.unchartedcore.utils.init.MessageUtils;
 import fr.minuskube.inv.InventoryManager;
@@ -75,6 +76,7 @@ public final class Main extends JavaPlugin {
         modules.add(new StatsModule(this));
         modules.add(new SilkSpawnersModule(this));
         modules.add(new HomesModule(this));
+        modules.add(new WarZoneClaimsModule(this));
 
         //Configs
         loadConfigs();
