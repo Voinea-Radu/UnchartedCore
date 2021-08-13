@@ -10,6 +10,7 @@ import dev.lightdream.unchartedcore.files.config.SQL;
 import dev.lightdream.unchartedcore.managers.*;
 import dev.lightdream.unchartedcore.modules.CoreModule;
 import dev.lightdream.unchartedcore.modules.anvil.AnvilModule;
+import dev.lightdream.unchartedcore.modules.cactusHopper.CactusHopperModule;
 import dev.lightdream.unchartedcore.modules.combatLog.CombatLogModule;
 import dev.lightdream.unchartedcore.modules.customEnchants.CustomEnchantsModule;
 import dev.lightdream.unchartedcore.modules.enchanting.EnchantingModule;
@@ -122,6 +123,9 @@ public final class Main extends JavaPlugin {
         }
         if (settings.combatLogModule) {
             modules.add(new CombatLogModule(this));
+        }
+        if (settings.cactusHopperModule) {
+            modules.add(new CactusHopperModule(this));
         }
 
         //Configs

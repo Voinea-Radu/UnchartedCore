@@ -18,5 +18,6 @@ public class SOTWConfig {
     public boolean enderPearlModule = true;
     public boolean SOTWModule = true;
     public boolean combatLogModule = true;
+    public boolean cactusHopperModule = true;
 
 }

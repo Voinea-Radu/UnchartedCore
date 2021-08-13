@@ -39,6 +39,7 @@ public class DatabaseUtils {
     private static Dao<Home, Integer> homeDao;
     private static Dao<FactionHomeAllow, Integer> factionHomeAllowDao;
     private static Dao<Kit, Integer> kitDao;
+    private static Dao<CactusHopper, Integer> cactusHopperDao;
 
     @Getter
     private static List<User> userList;
@@ -54,6 +55,8 @@ public class DatabaseUtils {
     private static List<FactionHomeAllow> factionHomeAllowList;
     @Getter
     private static List<Kit> kitList;
+    @Getter
+    private static List<CactusHopper> cactusHopperList;
 
 
     public static void init(Main main) throws SQLException {
@@ -75,6 +78,7 @@ public class DatabaseUtils {
         TableUtils.createTableIfNotExists(connectionSource, Home.class);
         TableUtils.createTableIfNotExists(connectionSource, FactionHomeAllow.class);
         TableUtils.createTableIfNotExists(connectionSource, Kit.class);
+        TableUtils.createTableIfNotExists(connectionSource, CactusHopper.class);
 
         userDao = DaoManager.createDao(connectionSource, User.class);
         signShopDao = DaoManager.createDao(connectionSource, SignShop.class);
@@ -83,6 +87,7 @@ public class DatabaseUtils {
         homeDao = DaoManager.createDao(connectionSource, Home.class);
         factionHomeAllowDao = DaoManager.createDao(connectionSource, FactionHomeAllow.class);
         kitDao = DaoManager.createDao(connectionSource, Kit.class);
+        cactusHopperDao = DaoManager.createDao(connectionSource, CactusHopper.class);
 
         userDao.setAutoCommit(getDatabaseConnection(), false);
         signShopDao.setAutoCommit(getDatabaseConnection(), false);
@@ -91,6 +96,7 @@ public class DatabaseUtils {
         homeDao.setAutoCommit(getDatabaseConnection(), false);
         factionHomeAllowDao.setAutoCommit(getDatabaseConnection(), false);
         kitDao.setAutoCommit(getDatabaseConnection(), false);
+        cactusHopperDao.setAutoCommit(getDatabaseConnection(), false);
 
         userList = getUsers();
         signShopList = getSignShops();
@@ -99,6 +105,7 @@ public class DatabaseUtils {
         homesList = getHomes();
         factionHomeAllowList = getFactionHomeAllows();
         kitList = getKits();
+        cactusHopperList = getCactusHoppers();
     }
 
     private @NotNull
@@ -181,6 +188,15 @@ public class DatabaseUtils {
     private static @NotNull List<Kit> getKits() {
         try {
             return kitDao.queryForAll();
+        } catch (SQLException exception) {
+            exception.printStackTrace();
+        }
+        return new ArrayList<>();
+    }
+
+    private static @NotNull List<CactusHopper> getCactusHoppers() {
+        try {
+            return cactusHopperDao.queryForAll();
         } catch (SQLException exception) {
             exception.printStackTrace();
         }
@@ -333,12 +349,22 @@ public class DatabaseUtils {
         return factionHomeAllowList.stream().filter(allow -> allow.factionId.equals(id1)).collect(Collectors.toList());
     }
 
-    public static Kit getKit(String name){
+    public static Kit getKit(String name) {
         Optional<Kit> optionalKit = kitList.stream().filter(kit -> kit.name.equals(name)).findFirst();
 
         return optionalKit.orElse(null);
+    }
 
+    public static CactusHopper getCactusHopper(Location location) {
+        Optional<CactusHopper> optionalCactusHopper = cactusHopperList.stream().filter(cactusHopper -> cactusHopper.getLocation().equals(location)).findFirst();
 
+        return optionalCactusHopper.orElse(null);
+    }
+
+    public static CactusHopper getCactusHopper(Location location, int range) {
+        Optional<CactusHopper> optionalCactusHopper = cactusHopperList.stream().filter(cactusHopper -> Math.abs(cactusHopper.getLocation().getX() - location.getX()) < range && Math.abs(cactusHopper.getLocation().getZ() - location.getZ()) < range).findFirst();
+
+        return optionalCactusHopper.orElse(null);
     }
 
 }
