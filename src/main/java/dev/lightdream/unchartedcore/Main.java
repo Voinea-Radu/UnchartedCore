@@ -19,6 +19,7 @@ import dev.lightdream.unchartedcore.modules.playerHeads.PlayerHeadsModule;
 import dev.lightdream.unchartedcore.modules.signshop.SignShopModule;
 import dev.lightdream.unchartedcore.modules.silkSpawners.SilkSpawnersModule;
 import dev.lightdream.unchartedcore.modules.stats.StatsModule;
+import dev.lightdream.unchartedcore.modules.trails.TrailsModule;
 import dev.lightdream.unchartedcore.modules.warZoneClaims.WarZoneClaimsModule;
 import dev.lightdream.unchartedcore.utils.init.DatabaseUtils;
 import dev.lightdream.unchartedcore.utils.init.MessageUtils;
@@ -81,6 +82,7 @@ public final class Main extends JavaPlugin {
         modules.add(new WarZoneClaimsModule(this));
         modules.add(new MountsModule(this));
         modules.add(new KitsModule(this));
+        modules.add(new TrailsModule(this));
 
         //Configs
         loadConfigs();
