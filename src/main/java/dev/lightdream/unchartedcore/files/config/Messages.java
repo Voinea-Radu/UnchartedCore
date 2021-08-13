@@ -74,8 +74,10 @@ public class Messages {
     public String kitDoesNotExist = "This kit does not exist";
     public String kitCreated = "This kit has been created";
     public String kitDeleted = "This kit has been deleted";
-    public String kitAlreadyExists = "This kit already exists";
     public String kits = "Kits: ";
+
+    //Pearls
+    public String enderPearlCoolDown= "You can only use a pearl at 5s";
 
 
 }

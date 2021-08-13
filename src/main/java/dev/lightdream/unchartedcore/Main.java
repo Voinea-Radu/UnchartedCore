@@ -12,9 +12,11 @@ import dev.lightdream.unchartedcore.modules.CoreModule;
 import dev.lightdream.unchartedcore.modules.anvil.AnvilModule;
 import dev.lightdream.unchartedcore.modules.customEnchants.CustomEnchantsModule;
 import dev.lightdream.unchartedcore.modules.enchanting.EnchantingModule;
+import dev.lightdream.unchartedcore.modules.enderPearl.EnderPearlModule;
 import dev.lightdream.unchartedcore.modules.homes.HomesModule;
 import dev.lightdream.unchartedcore.modules.kits.KitsModule;
 import dev.lightdream.unchartedcore.modules.mounts.MountsModule;
+import dev.lightdream.unchartedcore.modules.netherPortal.NetherPortalModule;
 import dev.lightdream.unchartedcore.modules.playerHeads.PlayerHeadsModule;
 import dev.lightdream.unchartedcore.modules.signshop.SignShopModule;
 import dev.lightdream.unchartedcore.modules.silkSpawners.SilkSpawnersModule;
@@ -83,6 +85,8 @@ public final class Main extends JavaPlugin {
         modules.add(new MountsModule(this));
         modules.add(new KitsModule(this));
         modules.add(new TrailsModule(this));
+        modules.add(new NetherPortalModule(this));
+        modules.add(new EnderPearlModule(this));
 
         //Configs
         loadConfigs();

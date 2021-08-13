@@ -18,7 +18,9 @@ public class MountsEvents implements Listener {
             return;
         }
         Player player = (Player) event.getEntity();
-        mounts.get(player).remove();
+        if (mounts.containsKey(player)) {
+            mounts.get(player).remove();
+        }
     }
 
 }
