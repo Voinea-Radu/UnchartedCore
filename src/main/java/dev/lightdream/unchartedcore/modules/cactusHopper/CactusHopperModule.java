@@ -5,6 +5,7 @@ import dev.lightdream.unchartedcore.commands.Command;
 import dev.lightdream.unchartedcore.modules.CoreModule;
 import org.bukkit.event.Listener;
 
+import java.util.Arrays;
 import java.util.List;
 
 public class CactusHopperModule extends CoreModule {
@@ -24,7 +25,9 @@ public class CactusHopperModule extends CoreModule {
 
     @Override
     public List<Command> registerCommands() {
-        return null;
+        return Arrays.asList(
+                new CactusHopperCommand(plugin)
+        );
     }
 
     @Override

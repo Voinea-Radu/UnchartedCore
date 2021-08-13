@@ -128,6 +128,7 @@ public final class Main extends JavaPlugin {
             modules.add(new CactusHopperModule(this));
         }
 
+
         //Configs
         if (loadConfigs) {
             loadConfigs();
