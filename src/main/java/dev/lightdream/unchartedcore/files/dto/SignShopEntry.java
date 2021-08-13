@@ -10,5 +10,6 @@ public class SignShopEntry {
     public XMaterial material;
     public double buyPrice;
     public double sellPrice;
+    public String data;
 
 }

@@ -39,6 +39,7 @@ public class Messages {
     public String signShopNotEnoughMoney = "Not enough money";
     public String signShopNotEnoughItems = "Not enough items";
     public String sold = "You have sold %amount% items for $%price%";
+    public String invalidItem = "This item is invalid";
 
     //Anvils
     public String typeName = "Please type your new name.";
@@ -56,5 +57,18 @@ public class Messages {
     public String statsSignValueLine = "%value%";
     public String statSignCreated = "Stat Sign created";
     public String statSignRemoved = "Stat Sign removed";
+
+    //Homes
+    public String homeSet = "You have set your home";
+    public String homeDeleted = "You have deleted your home";
+    public String homeDoesNotExist = "This home does not exist";
+    public String homeAlreadyExists = "This home already exists";
+    public String notAllowedToAllowHomes = "You are not allowed to allow other factions to have home on you factions claims";
+    public String homesAllowed = "This faction can now set homes on your faction's claims";
+    public String homesDenied = "This faction can no longer set homes on your faction's claims";
+    public String homes = "Homes: %homes%";
+    public String homeAllows = "Allows: %allows%";
+    public String invalidFaction = "This is an invalid faction";
+
 
 }

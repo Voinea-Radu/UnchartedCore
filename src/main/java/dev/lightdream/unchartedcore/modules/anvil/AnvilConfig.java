@@ -13,7 +13,7 @@ public class AnvilConfig {
 
     public GUIConfig guiConfig = new GUIConfig("anvil", "CHEST", "Anvil", 3, 9, new Item(XMaterial.BLACK_STAINED_GLASS_PANE, 1), Arrays.asList(
             new GUIItem(new Item(XMaterial.AIR, 10, 1, "", new ArrayList<>())),
-            new GUIItem(new Item(XMaterial.BARRIER, 12, 1, "Rename", new ArrayList<>())),
+            new GUIItem(new Item(XMaterial.BARRIER, 12, 1, "CLOSE", new ArrayList<>())),
             new GUIItem(new Item(XMaterial.AIR, 14, 1, "", new ArrayList<>())),
             new GUIItem(new Item(XMaterial.AIR, 16, 1, "", new ArrayList<>()))
     ));

@@ -19,13 +19,13 @@ public abstract class Command {
     public final Main plugin;
 
     /**
-     * @param plugin Main class
-     * @param aliases /command [alias]
-     * @param description Description of the sub command
-     * @param permission The permission needed to use the subcommand
+     * @param plugin         Main class
+     * @param aliases        /command [alias]
+     * @param description    Description of the sub command
+     * @param permission     The permission needed to use the subcommand
      * @param onlyForPlayers Weather the command can only be used by players
      * @param onlyForConsole Weather the command can only be used by conosle
-     * @param usage /command alias [description]
+     * @param usage          /command alias [description]
      */
     public Command(@NotNull Main plugin, @NotNull List<String> aliases, @NotNull String description, @NotNull String permission, boolean onlyForPlayers, boolean onlyForConsole, @NotNull String usage) {
         this.plugin = plugin;
@@ -38,7 +38,7 @@ public abstract class Command {
         }
         this.onlyForPlayers = onlyForPlayers;
         this.onlyForConsole = onlyForConsole;
-        this.usage = "/" + Main.PROJECT_ID + " " + aliases.get(0) + " " + usage;
+        this.usage = "/" + /*Main.PROJECT_ID + " " +*/ aliases.get(0) + " " + usage;
     }
 
     public abstract void execute(CommandSender sender, List<String> args);

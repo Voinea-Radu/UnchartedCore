@@ -11,6 +11,7 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
+import org.bukkit.block.Skull;
 
 @NoArgsConstructor
 @DatabaseTable(tableName = "stat_signs")
@@ -74,5 +75,13 @@ public class StatSign {
         sign.setLine(3, Utils.color(plugin.getMessages().statsSignValueLine).replace("%value%", StatsModule.instance.events.getStat(StatsModule.instance.events.top.get(stat), stat, true)));
 
         sign.update(true);
+
+        Location location = getLocation();
+        location.setY(location.getY() + 1);
+        Block headBlock = location.getWorld().getBlockAt(location);
+        headBlock.setType(Material.SKULL);
+        Skull skull = (Skull) headBlock.getState();
+        skull.setOwner(StatsModule.instance.events.top.get(stat).name);
+        skull.update(true);
     }
 }

@@ -99,6 +99,7 @@ public class EnchantingConfig {
             new GUIItem(new Item(XMaterial.AIR, 41, 1, "", new ArrayList<>())),
             new GUIItem(new Item(XMaterial.AIR, 42, 1, "", new ArrayList<>())),
             //new GUIItem(new Item(XMaterial.AIR, 43, 1, "", new ArrayList<>())),
+            new GUIItem(new Item(XMaterial.ARROW, 48, 1, "CLOSE", new ArrayList<>())),
             new GUIItem(new Item(XMaterial.ARROW, 45, 1, "BACK", new ArrayList<>())),
             new GUIItem(new Item(XMaterial.ARROW, 53, 1, "NEXT", new ArrayList<>()))
     ));

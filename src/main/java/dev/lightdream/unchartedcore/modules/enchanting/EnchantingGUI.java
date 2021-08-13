@@ -28,11 +28,11 @@ import java.util.Optional;
 public class EnchantingGUI implements InventoryProvider {
 
     private static GUIConfig config;
+    private final int page;
     public ItemStack enchantingItem;
     public EnchantCategory category;
-    private final int page;
 
-    public EnchantingGUI(int page){
+    public EnchantingGUI(int page) {
         this.page = page;
     }
 
@@ -72,6 +72,10 @@ public class EnchantingGUI implements InventoryProvider {
                     player.closeInventory();
                     EnchantingCategoryGUI.getInventory(0).open(player);
                 }));
+            } else if (i == config.items.size() - 3) {
+                contents.set(Utils.getSlotPosition(item.item.slot), ClickableItem.of(ItemBuilder.makeItem(item.item), e -> {
+                    player.closeInventory();
+                }));
             } else if (i == config.items.size() - 2) {
                 if (page != 0) {
                     contents.set(Utils.getSlotPosition(item.item.slot), ClickableItem.of(ItemBuilder.makeItem(item.item), e -> {
@@ -96,7 +100,7 @@ public class EnchantingGUI implements InventoryProvider {
                         }, 1);
                     }));
                 }
-            }else {
+            } else {
                 if (category.enchants.size() >= i + page * (config.items.size() - 3)) {
                     Enchant enchant = category.enchants.get(i + page * (config.items.size() - 3) - 1);
                     contents.set(Utils.getSlotPosition(item.item.slot), ClickableItem.of(getBook(enchant), e -> {

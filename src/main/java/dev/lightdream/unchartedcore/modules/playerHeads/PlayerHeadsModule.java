@@ -13,6 +13,7 @@ public class PlayerHeadsModule extends CoreModule {
 
     public static PlayerHeadsModule instance;
     public PlayerHeadsConfig settings;
+    public HeadsCommand headsCommand;
 
     public PlayerHeadsModule(Main plugin) {
         super(plugin, "PlayerHeadsModule");
@@ -28,13 +29,14 @@ public class PlayerHeadsModule extends CoreModule {
     public List<Command> registerCommands() {
         return Arrays.asList(
                 new SellHeadCommand(plugin),
-                new HeadsCommand(plugin)
+                headsCommand
         );
     }
 
     @Override
     public void enable() {
         DatabaseUtils.savePlayerHeads();
+        headsCommand = new HeadsCommand(plugin);
     }
 
     @Override

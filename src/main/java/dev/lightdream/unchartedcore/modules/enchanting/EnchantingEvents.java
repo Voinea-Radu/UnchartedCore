@@ -94,12 +94,28 @@ public class EnchantingEvents implements Listener {
                             items.put(player, gui.enchantingItem);
                             item.setAmount(item.getAmount() - 1);
                             event.setCurrentItem(item);
+                            event.setCurrentItem(null);
                         } else {
                             gui.enchantingItem = item;
                             items.put(player, item);
+                            event.setCurrentItem(null);
+                        }
+                    } else {
+                        player.getInventory().addItem(gui.enchantingItem);
+                        if (item.getAmount() > 1) {
+                            gui.enchantingItem = item.clone();
+                            gui.enchantingItem.setAmount(1);
+                            items.put(player, gui.enchantingItem);
+                            item.setAmount(item.getAmount() - 1);
+                            event.setCurrentItem(item);
+                            event.setCurrentItem(null);
+                        } else {
+                            gui.enchantingItem = item;
+                            items.put(player, item);
+                            event.setCurrentItem(null);
                         }
                     }
-                    event.setCurrentItem(null);
+                    event.setCancelled(true);
                 } else {
                     event.setCancelled(true);
                 }

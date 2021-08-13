@@ -6,6 +6,7 @@ import dev.lightdream.unchartedcore.databases.User;
 import dev.lightdream.unchartedcore.utils.init.DatabaseUtils;
 import dev.lightdream.unchartedcore.utils.init.MessageUtils;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collections;
@@ -21,8 +22,15 @@ public class HeadsCommand extends Command {
 
     @Override
     public void execute(CommandSender sender, List<String> args) {
-        if (args.size() != 1) {
-            sendUsage(sender);
+        Player player = (Player) sender;
+        if (args.size() == 0) {
+            User user = DatabaseUtils.getUser(player.getUniqueId());
+            MessageUtils.sendMessage(sender, plugin.getMessages().soldTimes.replace("%count%", String.valueOf(user.headSold)));
+            return;
+        }
+        if (!player.hasPermission(this.permission + ".others")) {
+            User user = DatabaseUtils.getUser(player.getUniqueId());
+            MessageUtils.sendMessage(sender, plugin.getMessages().soldTimes.replace("%count%", String.valueOf(user.headSold)));
             return;
         }
         User user = DatabaseUtils.getUser(args.get(0));

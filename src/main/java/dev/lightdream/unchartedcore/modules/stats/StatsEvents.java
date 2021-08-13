@@ -3,6 +3,7 @@ package dev.lightdream.unchartedcore.modules.stats;
 import dev.lightdream.unchartedcore.Main;
 import dev.lightdream.unchartedcore.databases.StatSign;
 import dev.lightdream.unchartedcore.databases.User;
+import dev.lightdream.unchartedcore.modules.signshop.SignShopModule;
 import dev.lightdream.unchartedcore.utils.init.DatabaseUtils;
 import dev.lightdream.unchartedcore.utils.init.MessageUtils;
 import org.bukkit.Bukkit;
@@ -13,6 +14,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
@@ -177,7 +179,6 @@ public class StatsEvents implements Listener {
             case "Join Date":
                 Calendar calendar = Calendar.getInstance();
                 calendar.setTimeInMillis(user.joinDate);
-
                 int year = calendar.get(Calendar.YEAR);
                 int month = calendar.get(Calendar.MONTH);
                 int day = calendar.get(Calendar.DAY_OF_MONTH);
@@ -185,6 +186,19 @@ public class StatsEvents implements Listener {
         }
         return "";
     }
+
+    @EventHandler()
+    public void onStatsCommandSend(PlayerCommandPreprocessEvent event) {
+        Player player = event.getPlayer();
+        String message = event.getMessage();
+        System.out.println(message);
+        String[] parts = message.split(" ");
+        if (parts[0].equals("/stat")||parts[0].equals("/stats")) {
+            event.setCancelled(true);
+            StatsModule.instance.statsCommand.execute(player, new ArrayList<>(Arrays.asList(parts).subList(1, parts.length)));
+        }
+    }
+
 
 
     public static class StatsComparator implements Comparator<User> {

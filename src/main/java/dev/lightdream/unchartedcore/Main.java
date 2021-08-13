@@ -12,8 +12,10 @@ import dev.lightdream.unchartedcore.modules.CoreModule;
 import dev.lightdream.unchartedcore.modules.anvil.AnvilModule;
 import dev.lightdream.unchartedcore.modules.customEnchants.CustomEnchantsModule;
 import dev.lightdream.unchartedcore.modules.enchanting.EnchantingModule;
+import dev.lightdream.unchartedcore.modules.homes.HomesModule;
 import dev.lightdream.unchartedcore.modules.playerHeads.PlayerHeadsModule;
 import dev.lightdream.unchartedcore.modules.signshop.SignShopModule;
+import dev.lightdream.unchartedcore.modules.silkSpawners.SilkSpawnersModule;
 import dev.lightdream.unchartedcore.modules.stats.StatsModule;
 import dev.lightdream.unchartedcore.utils.init.DatabaseUtils;
 import dev.lightdream.unchartedcore.utils.init.MessageUtils;
@@ -53,6 +55,9 @@ public final class Main extends JavaPlugin {
     private GUIs GUIs;
     private SQL sql;
 
+    //Homes
+    private net.milkbowl.vault.permission.Permission permissions;
+
     @Override
     public void onEnable() {
         instance = this;
@@ -68,6 +73,8 @@ public final class Main extends JavaPlugin {
         modules.add(new AnvilModule(this));
         modules.add(new PlayerHeadsModule(this));
         modules.add(new StatsModule(this));
+        modules.add(new SilkSpawnersModule(this));
+        modules.add(new HomesModule(this));
 
         //Configs
         loadConfigs();
@@ -105,6 +112,12 @@ public final class Main extends JavaPlugin {
             getServer().getPluginManager().disablePlugin(this);
             return;
         }
+        if (!setupPermissions()) {
+            getLogger().severe(String.format("[%s] - Disabled due to no Vault dependency found!", getDescription().getName()));
+            getServer().getPluginManager().disablePlugin(this);
+            return;
+        }
+
     }
 
     @Override
@@ -138,4 +151,11 @@ public final class Main extends JavaPlugin {
         economy = rsp.getProvider();
         return economy != null;
     }
+
+    private boolean setupPermissions() {
+        RegisteredServiceProvider<net.milkbowl.vault.permission.Permission> rsp = getServer().getServicesManager().getRegistration(net.milkbowl.vault.permission.Permission.class);
+        permissions = rsp.getProvider();
+        return permissions != null;
+    }
+
 }

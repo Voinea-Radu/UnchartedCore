@@ -18,7 +18,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.SignChangeEvent;
-import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
@@ -59,7 +58,7 @@ public class SignShopEvents implements Listener {
     public void onSignEdit(SignChangeEvent event) {
         Player player = event.getPlayer();
         if (event.getLine(0).equals("[SIGN_SHOP]")) {
-            SignShop signShop = new SignShop(event.getBlock().getLocation(), event.getLine(1), event.getLine(2));
+            SignShop signShop = new SignShop(event.getBlock().getLocation(), event.getLine(1), Integer.parseInt(event.getLine(2)));
             DatabaseUtils.getSignShopList().add(signShop);
             Bukkit.getScheduler().runTaskLater(plugin, signShop::process, 10);
             MessageUtils.sendMessage(player, plugin.getMessages().signShopCreated);
@@ -112,13 +111,13 @@ public class SignShopEvents implements Listener {
         BuySellResponse response;
         switch (signShop.type) {
             case "BUY":
-                response = buy(count, player, data.material.parseMaterial());
+                response = buy(count, player, data.material.parseMaterial(), data.data);
                 if (response.response) {
                     setSessionSign(player, signShop, response.count * response.price);
                 }
                 break;
             case "SELL":
-                response = sell(count, player, data.material.parseMaterial());
+                response = sell(count, player, data.material.parseMaterial(), data.data);
                 setSessionSign(player, signShop, response.count * response.price);
                 break;
         }
@@ -131,32 +130,45 @@ public class SignShopEvents implements Listener {
         String[] parts = message.split(" ");
         if (parts[0].equals("/sell")) {
             event.setCancelled(true);
-            if (parts.length == 1) {
-                return;
-            }
-            SignShopModule.instance.sellCommand.execute(player, Arrays.asList(parts[1]));
+            SignShopModule.instance.sellCommand.execute(player, new ArrayList<>(Arrays.asList(parts).subList(1, parts.length)));
         }
+
     }
 
-    public BuySellResponse buy(int count, Player player, Material material) {
+    public BuySellResponse buy(int count, Player player, Material material, String dta) {
         count = Utils.addAvailable(player, material, count, false);
-        SignShopEntry data = SignShopModule.instance.settings.getEntryByMaterial(material.toString());
+        SignShopEntry data = SignShopModule.instance.settings.getEntryByMaterial(material.toString(), dta);
         double price = data.buyPrice;
         if (plugin.getEconomy().getBalance(player) >= price * count) {
             plugin.getEconomy().withdrawPlayer(player, price * count);
-            Utils.addAvailable(player, data.material.parseMaterial(), count, true);
+            if (material.equals(Material.MOB_SPAWNER)) {
+                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "silkspawner give " + player.getName() + " " + data.data + " " + count);
+            } else {
+                Utils.addAvailable(player, data.material.parseMaterial(), count, true);
+            }
             return new BuySellResponse(count, price, true);
         } else {
-            Utils.removeAvailable(player, count, data.material.parseMaterial());
+            MessageUtils.sendMessage(player, plugin.getMessages().signShopNotEnoughMoney);
             return new BuySellResponse(count, price, false);
         }
     }
 
-    public BuySellResponse sell(int count, Player player, Material material) {
-        SignShopEntry data = SignShopModule.instance.settings.getEntryByMaterial(material.toString());
+    public BuySellResponse sell(int count, Player player, Material material, String dta) {
+        if (material.equals(Material.MOB_SPAWNER)) {
+            MessageUtils.sendMessage(player, plugin.getMessages().invalidItem);
+            return new BuySellResponse(0, 0.0, false);
+        }
+        SignShopEntry data = SignShopModule.instance.settings.getEntryByMaterial(material.toString(), dta);
+        if (data == null) {
+            MessageUtils.sendMessage(player, plugin.getMessages().invalidItem);
+            return new BuySellResponse(0, 0.0, false);
+        }
         double price = data.sellPrice;
         count = Utils.removeAvailable(player, count, material);
         plugin.getEconomy().depositPlayer(player, price * count);
+        if (count == 0) {
+            MessageUtils.sendMessage(player, plugin.getMessages().signShopNotEnoughItems);
+        }
         return new BuySellResponse(count, price, true);
 
     }

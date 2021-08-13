@@ -8,6 +8,7 @@ import dev.lightdream.unchartedcore.utils.init.DatabaseUtils;
 import org.bukkit.event.Listener;
 
 import javax.xml.crypto.Data;
+import java.util.Arrays;
 import java.util.List;
 
 public class StatsModule extends CoreModule {
@@ -15,6 +16,7 @@ public class StatsModule extends CoreModule {
     public static StatsModule instance;
     public StatsConfig settings;
     public StatsEvents events;
+    public StatsCommand statsCommand;
 
     public StatsModule(Main plugin) {
         super(plugin, "StatsModule");
@@ -28,12 +30,15 @@ public class StatsModule extends CoreModule {
 
     @Override
     public List<Command> registerCommands() {
-        return null;
+        return Arrays.asList(
+                statsCommand
+        );
     }
 
     @Override
     public void enable() {
         events = new StatsEvents();
+        statsCommand = new StatsCommand(plugin);
     }
 
     @Override

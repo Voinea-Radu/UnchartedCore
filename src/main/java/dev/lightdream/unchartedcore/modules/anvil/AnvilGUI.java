@@ -55,14 +55,7 @@ public class AnvilGUI implements InventoryProvider {
 
         }));
         contents.set(Utils.getSlotPosition(config.items.get(1).item.slot), ClickableItem.of(ItemBuilder.makeItem(config.items.get(1).item), e -> {
-            if (item1 != null) {
-                List<ItemStack> tmp = AnvilModule.instance.events.items.getOrDefault(player, Arrays.asList(null, null));
-                tmp.set(0, null);
-                AnvilModule.instance.events.items.put(player, tmp);
-                AnvilModule.instance.events.toRename.put(player, item1);
-                player.closeInventory();
-                MessageUtils.sendMessage(player, Main.instance.getMessages().typeName);
-            }
+            player.closeInventory();
         }));
         contents.set(Utils.getSlotPosition(config.items.get(2).item.slot), ClickableItem.of(item2, e -> {
             if (item2 != null) {

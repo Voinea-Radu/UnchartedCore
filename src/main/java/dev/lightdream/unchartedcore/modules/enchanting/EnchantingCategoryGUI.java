@@ -76,6 +76,10 @@ public class EnchantingCategoryGUI implements InventoryProvider {
                             getInventory(0).open(player);
                         }));
                     }
+                } else if (i == config.items.size() - 3) {
+                    contents.set(Utils.getSlotPosition(item.item.slot), ClickableItem.of(ItemBuilder.makeItem(item.item), e -> {
+                        player.closeInventory();
+                    }));
                 } else if (i == config.items.size() - 2) {
                     if (page != 0) {
                         contents.set(Utils.getSlotPosition(item.item.slot), ClickableItem.of(ItemBuilder.makeItem(item.item), e -> {

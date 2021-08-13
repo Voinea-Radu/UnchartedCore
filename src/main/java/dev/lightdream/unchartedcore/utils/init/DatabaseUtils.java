@@ -8,10 +8,7 @@ import com.j256.ormlite.support.ConnectionSource;
 import com.j256.ormlite.support.DatabaseConnection;
 import com.j256.ormlite.table.TableUtils;
 import dev.lightdream.unchartedcore.Main;
-import dev.lightdream.unchartedcore.databases.PlayerHead;
-import dev.lightdream.unchartedcore.databases.SignShop;
-import dev.lightdream.unchartedcore.databases.StatSign;
-import dev.lightdream.unchartedcore.databases.User;
+import dev.lightdream.unchartedcore.databases.*;
 import dev.lightdream.unchartedcore.files.config.SQL;
 import lombok.Getter;
 import org.bukkit.Bukkit;
@@ -25,6 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @SuppressWarnings({"unused", "UnusedReturnValue"})
 public class DatabaseUtils {
@@ -38,6 +36,8 @@ public class DatabaseUtils {
     private static Dao<SignShop, Integer> signShopDao;
     private static Dao<StatSign, Integer> statSignDao;
     private static Dao<PlayerHead, Integer> playerHeadDao;
+    private static Dao<Home, Integer> homeDao;
+    private static Dao<FactionHomeAllow, Integer> factionHomeAllowDao;
 
     @Getter
     private static List<User> userList;
@@ -47,6 +47,10 @@ public class DatabaseUtils {
     private static List<StatSign> statSignsList;
     @Getter
     private static List<PlayerHead> playerHeadList;
+    @Getter
+    private static List<Home> homesList;
+    @Getter
+    private static List<FactionHomeAllow> factionHomeAllowList;
 
     public static void init(Main main) throws SQLException {
         plugin = main;
@@ -64,21 +68,29 @@ public class DatabaseUtils {
         TableUtils.createTableIfNotExists(connectionSource, SignShop.class);
         TableUtils.createTableIfNotExists(connectionSource, PlayerHead.class);
         TableUtils.createTableIfNotExists(connectionSource, StatSign.class);
+        TableUtils.createTableIfNotExists(connectionSource, Home.class);
+        TableUtils.createTableIfNotExists(connectionSource, FactionHomeAllow.class);
 
         userDao = DaoManager.createDao(connectionSource, User.class);
         signShopDao = DaoManager.createDao(connectionSource, SignShop.class);
         playerHeadDao = DaoManager.createDao(connectionSource, PlayerHead.class);
         statSignDao = DaoManager.createDao(connectionSource, StatSign.class);
+        homeDao = DaoManager.createDao(connectionSource, Home.class);
+        factionHomeAllowDao = DaoManager.createDao(connectionSource, FactionHomeAllow.class);
 
         userDao.setAutoCommit(getDatabaseConnection(), false);
         signShopDao.setAutoCommit(getDatabaseConnection(), false);
         playerHeadDao.setAutoCommit(getDatabaseConnection(), false);
         statSignDao.setAutoCommit(getDatabaseConnection(), false);
+        homeDao.setAutoCommit(getDatabaseConnection(), false);
+        factionHomeAllowDao.setAutoCommit(getDatabaseConnection(), false);
 
         userList = getUsers();
         signShopList = getSignShops();
         playerHeadList = getPlayerHeads();
         statSignsList = getStatSigns();
+        homesList = getHomes();
+        factionHomeAllowList = getFactionHomeAllows();
     }
 
     private @NotNull
@@ -140,6 +152,24 @@ public class DatabaseUtils {
         return new ArrayList<>();
     }
 
+    private static @NotNull List<Home> getHomes() {
+        try {
+            return homeDao.queryForAll();
+        } catch (SQLException exception) {
+            exception.printStackTrace();
+        }
+        return new ArrayList<>();
+    }
+
+    private static @NotNull List<FactionHomeAllow> getFactionHomeAllows() {
+        try {
+            return factionHomeAllowDao.queryForAll();
+        } catch (SQLException exception) {
+            exception.printStackTrace();
+        }
+        return new ArrayList<>();
+    }
+
     public static void saveUsers() {
         try {
             for (User user : userList) {
@@ -185,6 +215,28 @@ public class DatabaseUtils {
     }
 
 
+    public static void saveHomes() {
+        try {
+            for (Home home : homesList) {
+                homeDao.createOrUpdate(home);
+            }
+            homeDao.commit(getDatabaseConnection());
+        } catch (SQLException exception) {
+            exception.printStackTrace();
+        }
+    }
+
+    public static void saveFactionHomeAllows() {
+        try {
+            for (FactionHomeAllow allow : factionHomeAllowList) {
+                factionHomeAllowDao.createOrUpdate(allow);
+            }
+            factionHomeAllowDao.commit(getDatabaseConnection());
+        } catch (SQLException exception) {
+            exception.printStackTrace();
+        }
+    }
+
     public static @NotNull User getUser(@NotNull UUID uuid) {
         Optional<User> optionalUser = userList.stream().filter(user -> user.uuid.equals(uuid)).findFirst();
 
@@ -226,4 +278,31 @@ public class DatabaseUtils {
 
         return optionalStatSign.orElse(null);
     }
+
+    public static @Nullable Home getHome(User user, String name) {
+        Optional<Home> optionalHome = homesList.stream().filter(home -> home.owner.equals(user.uuid) && home.name.equals(name)).findFirst();
+
+        return optionalHome.orElse(null);
+    }
+
+    public static @NotNull List<Home> getHomes(User user) {
+        return homesList.stream().filter(home -> home.owner.equals(user.uuid)).collect(Collectors.toList());
+    }
+
+    public static Boolean canHaveHome(String id1, String id2) {
+        Optional<FactionHomeAllow> optionalFactionHomeAllow = factionHomeAllowList.stream().filter(allow -> allow.factionId.equals(id1) && allow.allowId.equals(id2)).findFirst();
+
+        return optionalFactionHomeAllow.isPresent();
+    }
+
+    public static FactionHomeAllow getFactionHomeAllow(String id1, String id2) {
+        Optional<FactionHomeAllow> optionalFactionHomeAllow = factionHomeAllowList.stream().filter(allow -> allow.factionId.equals(id1) && allow.allowId.equals(id2)).findFirst();
+
+        return optionalFactionHomeAllow.orElse(null);
+    }
+
+    public static List<FactionHomeAllow> getFactionHomeAllows(String id1) {
+        return factionHomeAllowList.stream().filter(allow -> allow.factionId.equals(id1)).collect(Collectors.toList());
+    }
+
 }

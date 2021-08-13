@@ -4,9 +4,9 @@ import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 import dev.lightdream.unchartedcore.Main;
 import dev.lightdream.unchartedcore.files.dto.SignShopEntry;
+import dev.lightdream.unchartedcore.files.dto.XMaterial;
 import dev.lightdream.unchartedcore.modules.signshop.SignShopModule;
 import dev.lightdream.unchartedcore.utils.Utils;
-import dev.lightdream.unchartedcore.utils.init.DatabaseUtils;
 import lombok.NoArgsConstructor;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -31,7 +31,7 @@ public class SignShop {
     @DatabaseField(columnName = "type")
     public String type;
     @DatabaseField(columnName = "item")
-    public String item;
+    public int itemId;
 
     /**
      * @param world World name
@@ -39,24 +39,23 @@ public class SignShop {
      * @param y     World coordinate Y
      * @param z     World coordinate Z
      * @param type  SELL/BUY
-     * @param item  Material
      */
-    public SignShop(String world, int x, int y, int z, String type, String item) {
+    public SignShop(String world, int x, int y, int z, String type, int id) {
         this.world = world;
         this.x = x;
         this.y = y;
         this.z = z;
         this.type = type;
-        this.item = item;
+        this.itemId = id;
     }
 
-    public SignShop(Location location, String type, String item) {
+    public SignShop(Location location, String type, int id) {
         this.world = location.getWorld().getName();
         this.x = location.getBlockX();
         this.y = location.getBlockY();
         this.z = location.getBlockZ();
         this.type = type;
-        this.item = item;
+        this.itemId = id;
     }
 
     public Location getLocation() {
@@ -68,10 +67,9 @@ public class SignShop {
      */
     public SignShopEntry getDetails() {
         try {
-            int id = Integer.parseInt(item);
-            return SignShopModule.instance.settings.signShopEntries.getOrDefault(id, null);
+            return SignShopModule.instance.settings.signShopEntries.getOrDefault(itemId, null);
         } catch (NumberFormatException e) {
-            return SignShopModule.instance.settings.getEntryByMaterial(item);
+            return null;
         }
     }
 
@@ -101,7 +99,11 @@ public class SignShop {
                 sign.setLine(3, Utils.color(plugin.getMessages().signSellInfo));
                 break;
         }
-        sign.setLine(1, Utils.color(plugin.getMessages().signItem.replace("%item%", data.material.toString())));
+        if (data.material == XMaterial.SPAWNER) {
+            sign.setLine(1, Utils.color(plugin.getMessages().signItem.replace("%item%", data.material.toString() + " " + data.data)));
+        } else {
+            sign.setLine(1, Utils.color(plugin.getMessages().signItem.replace("%item%", data.material.toString())));
+        }
         sign.update(true);
     }
 }
