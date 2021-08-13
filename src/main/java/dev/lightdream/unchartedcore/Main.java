@@ -10,6 +10,7 @@ import dev.lightdream.unchartedcore.files.config.SQL;
 import dev.lightdream.unchartedcore.managers.*;
 import dev.lightdream.unchartedcore.modules.CoreModule;
 import dev.lightdream.unchartedcore.modules.anvil.AnvilModule;
+import dev.lightdream.unchartedcore.modules.combatLog.CombatLogModule;
 import dev.lightdream.unchartedcore.modules.customEnchants.CustomEnchantsModule;
 import dev.lightdream.unchartedcore.modules.enchanting.EnchantingModule;
 import dev.lightdream.unchartedcore.modules.enderPearl.EnderPearlModule;
@@ -20,6 +21,7 @@ import dev.lightdream.unchartedcore.modules.netherPortal.NetherPortalModule;
 import dev.lightdream.unchartedcore.modules.playerHeads.PlayerHeadsModule;
 import dev.lightdream.unchartedcore.modules.signshop.SignShopModule;
 import dev.lightdream.unchartedcore.modules.silkSpawners.SilkSpawnersModule;
+import dev.lightdream.unchartedcore.modules.sotw.SOTWModule;
 import dev.lightdream.unchartedcore.modules.stats.StatsModule;
 import dev.lightdream.unchartedcore.modules.trails.TrailsModule;
 import dev.lightdream.unchartedcore.modules.warZoneClaims.WarZoneClaimsModule;
@@ -43,6 +45,7 @@ public final class Main extends JavaPlugin {
     public final static String PROJECT_NAME = "UnchartedCore";
     public final static String PROJECT_ID = "uc";
     public static Main instance;
+    public static boolean loadConfigs = true;
     //Commands
     private final List<Command> commands = new ArrayList<>();
     private final List<CoreModule> modules = new ArrayList<>();
@@ -60,7 +63,6 @@ public final class Main extends JavaPlugin {
     private Messages messages;
     private GUIs GUIs;
     private SQL sql;
-
     //Homes
     private net.milkbowl.vault.permission.Permission permissions;
 
@@ -73,23 +75,59 @@ public final class Main extends JavaPlugin {
         fileManager = new FileManager(this, FileManager.PersistType.YAML);
 
         //Modules
-        modules.add(new SignShopModule(this));
-        modules.add(new EnchantingModule(this));
-        modules.add(new CustomEnchantsModule(this));
-        modules.add(new AnvilModule(this));
-        modules.add(new PlayerHeadsModule(this));
-        modules.add(new StatsModule(this));
-        modules.add(new SilkSpawnersModule(this));
-        modules.add(new HomesModule(this));
-        modules.add(new WarZoneClaimsModule(this));
-        modules.add(new MountsModule(this));
-        modules.add(new KitsModule(this));
-        modules.add(new TrailsModule(this));
-        modules.add(new NetherPortalModule(this));
-        modules.add(new EnderPearlModule(this));
+        if (settings.signShopModule) {
+            modules.add(new SignShopModule(this));
+        }
+        if (settings.enchantingModule) {
+            modules.add(new EnchantingModule(this));
+        }
+        if (settings.customEnchantsModule) {
+            modules.add(new CustomEnchantsModule(this));
+        }
+        if (settings.anvilModule) {
+            modules.add(new AnvilModule(this));
+        }
+        if (settings.playerHeadsModule) {
+            modules.add(new PlayerHeadsModule(this));
+        }
+        if (settings.statsModule) {
+            modules.add(new StatsModule(this));
+        }
+        if (settings.silkSpawnersModule) {
+            modules.add(new SilkSpawnersModule(this));
+        }
+        if (settings.homesModule) {
+            modules.add(new HomesModule(this));
+        }
+        if (settings.warZoneClaimsModule) {
+            modules.add(new WarZoneClaimsModule(this));
+        }
+        if (settings.mountsModule) {
+            modules.add(new MountsModule(this));
+        }
+        if (settings.kitsModule) {
+            modules.add(new KitsModule(this));
+        }
+        if (settings.trailsModule) {
+            modules.add(new TrailsModule(this));
+        }
+        if (settings.netherPortalModule) {
+            modules.add(new NetherPortalModule(this));
+        }
+        if (settings.enderPearlModule) {
+            modules.add(new EnderPearlModule(this));
+        }
+        if (settings.SOTWModule) {
+            modules.add(new SOTWModule(this));
+        }
+        if (settings.combatLogModule) {
+            modules.add(new CombatLogModule(this));
+        }
 
         //Configs
-        loadConfigs();
+        if (loadConfigs) {
+            loadConfigs();
+        }
 
 
         //Utils
