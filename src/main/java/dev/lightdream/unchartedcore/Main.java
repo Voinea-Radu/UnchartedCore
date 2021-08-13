@@ -13,6 +13,7 @@ import dev.lightdream.unchartedcore.modules.anvil.AnvilModule;
 import dev.lightdream.unchartedcore.modules.customEnchants.CustomEnchantsModule;
 import dev.lightdream.unchartedcore.modules.enchanting.EnchantingModule;
 import dev.lightdream.unchartedcore.modules.homes.HomesModule;
+import dev.lightdream.unchartedcore.modules.kits.KitsModule;
 import dev.lightdream.unchartedcore.modules.mounts.MountsModule;
 import dev.lightdream.unchartedcore.modules.playerHeads.PlayerHeadsModule;
 import dev.lightdream.unchartedcore.modules.signshop.SignShopModule;
@@ -79,6 +80,7 @@ public final class Main extends JavaPlugin {
         modules.add(new HomesModule(this));
         modules.add(new WarZoneClaimsModule(this));
         modules.add(new MountsModule(this));
+        modules.add(new KitsModule(this));
 
         //Configs
         loadConfigs();

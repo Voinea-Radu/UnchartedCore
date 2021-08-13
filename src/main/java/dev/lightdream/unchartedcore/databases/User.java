@@ -34,6 +34,8 @@ public class User {
     public int headSold;
     @DatabaseField(columnName = "extra_homes")
     public int extraHomes;
+    @DatabaseField(columnName = "trail")
+    public boolean trail;
 
     public User(UUID uuid, String name) {
         this.uuid = uuid;
@@ -45,6 +47,7 @@ public class User {
         this.joinDate = System.currentTimeMillis();
         this.headSold = 0;
         this.extraHomes = 0;
+        this.trail = false;
     }
 
     public int getMaxHomeCount() {

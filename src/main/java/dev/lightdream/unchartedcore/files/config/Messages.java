@@ -70,5 +70,12 @@ public class Messages {
     public String homeAllows = "Allows: %allows%";
     public String invalidFaction = "This is an invalid faction";
 
+    //Kits
+    public String kitDoesNotExist = "This kit does not exist";
+    public String kitCreated = "This kit has been created";
+    public String kitDeleted = "This kit has been deleted";
+    public String kitAlreadyExists = "This kit already exists";
+    public String kits = "Kits: ";
+
 
 }

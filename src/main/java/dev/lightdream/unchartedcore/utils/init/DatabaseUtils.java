@@ -38,6 +38,7 @@ public class DatabaseUtils {
     private static Dao<PlayerHead, Integer> playerHeadDao;
     private static Dao<Home, Integer> homeDao;
     private static Dao<FactionHomeAllow, Integer> factionHomeAllowDao;
+    private static Dao<Kit, Integer> kitDao;
 
     @Getter
     private static List<User> userList;
@@ -51,6 +52,9 @@ public class DatabaseUtils {
     private static List<Home> homesList;
     @Getter
     private static List<FactionHomeAllow> factionHomeAllowList;
+    @Getter
+    private static List<Kit> kitList;
+
 
     public static void init(Main main) throws SQLException {
         plugin = main;
@@ -70,6 +74,7 @@ public class DatabaseUtils {
         TableUtils.createTableIfNotExists(connectionSource, StatSign.class);
         TableUtils.createTableIfNotExists(connectionSource, Home.class);
         TableUtils.createTableIfNotExists(connectionSource, FactionHomeAllow.class);
+        TableUtils.createTableIfNotExists(connectionSource, Kit.class);
 
         userDao = DaoManager.createDao(connectionSource, User.class);
         signShopDao = DaoManager.createDao(connectionSource, SignShop.class);
@@ -77,6 +82,7 @@ public class DatabaseUtils {
         statSignDao = DaoManager.createDao(connectionSource, StatSign.class);
         homeDao = DaoManager.createDao(connectionSource, Home.class);
         factionHomeAllowDao = DaoManager.createDao(connectionSource, FactionHomeAllow.class);
+        kitDao = DaoManager.createDao(connectionSource, Kit.class);
 
         userDao.setAutoCommit(getDatabaseConnection(), false);
         signShopDao.setAutoCommit(getDatabaseConnection(), false);
@@ -84,6 +90,7 @@ public class DatabaseUtils {
         statSignDao.setAutoCommit(getDatabaseConnection(), false);
         homeDao.setAutoCommit(getDatabaseConnection(), false);
         factionHomeAllowDao.setAutoCommit(getDatabaseConnection(), false);
+        kitDao.setAutoCommit(getDatabaseConnection(), false);
 
         userList = getUsers();
         signShopList = getSignShops();
@@ -91,6 +98,7 @@ public class DatabaseUtils {
         statSignsList = getStatSigns();
         homesList = getHomes();
         factionHomeAllowList = getFactionHomeAllows();
+        kitList = getKits();
     }
 
     private @NotNull
@@ -170,6 +178,15 @@ public class DatabaseUtils {
         return new ArrayList<>();
     }
 
+    private static @NotNull List<Kit> getKits() {
+        try {
+            return kitDao.queryForAll();
+        } catch (SQLException exception) {
+            exception.printStackTrace();
+        }
+        return new ArrayList<>();
+    }
+
     public static void saveUsers() {
         try {
             for (User user : userList) {
@@ -232,6 +249,17 @@ public class DatabaseUtils {
                 factionHomeAllowDao.createOrUpdate(allow);
             }
             factionHomeAllowDao.commit(getDatabaseConnection());
+        } catch (SQLException exception) {
+            exception.printStackTrace();
+        }
+    }
+
+    public static void saveKits() {
+        try {
+            for (Kit kit : kitList) {
+                kitDao.createOrUpdate(kit);
+            }
+            kitDao.commit(getDatabaseConnection());
         } catch (SQLException exception) {
             exception.printStackTrace();
         }
@@ -303,6 +331,14 @@ public class DatabaseUtils {
 
     public static List<FactionHomeAllow> getFactionHomeAllows(String id1) {
         return factionHomeAllowList.stream().filter(allow -> allow.factionId.equals(id1)).collect(Collectors.toList());
+    }
+
+    public static Kit getKit(String name){
+        Optional<Kit> optionalKit = kitList.stream().filter(kit -> kit.name.equals(name)).findFirst();
+
+        return optionalKit.orElse(null);
+
+
     }
 
 }
