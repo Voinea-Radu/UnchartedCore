@@ -1,5 +1,8 @@
 package dev.lightdream.unchartedcore.modules.combatLog;
 
+import com.massivecraft.factions.Board;
+import com.massivecraft.factions.FLocation;
+import com.massivecraft.factions.Faction;
 import dev.lightdream.unchartedcore.Main;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Arrow;
@@ -8,6 +11,8 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.event.player.PlayerTeleportEvent;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -47,6 +52,32 @@ public class CombatLogEvents implements Listener {
     @EventHandler
     public void onPlayerDeath(PlayerDeathEvent event) {
         combat.remove(event.getEntity());
+    }
+
+    @EventHandler
+    public void playerMoveEvent(PlayerMoveEvent event) {
+        FLocation l1 = new FLocation(event.getFrom());
+        FLocation l2 = new FLocation(event.getTo());
+        Faction f1 = Board.getInstance().getFactionAt(l1);
+        Faction f2 = Board.getInstance().getFactionAt(l2);
+        if (f1.isWarZone() && !f2.isWarZone()) {
+            if (combat.containsKey(event.getPlayer())) {
+                event.setCancelled(true);
+            }
+        }
+    }
+
+    @EventHandler
+    public void onPlayerTeleport(PlayerTeleportEvent event) {
+        FLocation l1 = new FLocation(event.getFrom());
+        FLocation l2 = new FLocation(event.getTo());
+        Faction f1 = Board.getInstance().getFactionAt(l1);
+        Faction f2 = Board.getInstance().getFactionAt(l2);
+        if (f1.isWarZone() && !f2.isWarZone()) {
+            if (combat.containsKey(event.getPlayer())) {
+                event.setCancelled(true);
+            }
+        }
     }
 
     public List<Player> getPlayers(EntityDamageByEntityEvent event) {
