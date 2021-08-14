@@ -29,16 +29,7 @@ public class MountCommand extends Command {
 
     @Override
     public void execute(CommandSender sender, List<String> args) {
-        Player player = (Player) sender;
-
-        Entity entity = player.getLocation().getWorld().spawnCreature(player.getLocation(), EntityType.HORSE);
-        Horse horse = (Horse) entity;
-        int variant = Utils.generateRandom(0, mounts.size() - 1);
-        horse.setVariant(mounts.get(variant));
-        horse.setTamed(true);
-        horse.getInventory().setSaddle(new ItemStack(Material.SADDLE, 1));
-        horse.setOwner(player);
-        MountsModule.instance.events.mounts.put(player, horse);
+        MountsGUI.getInventory().open((Player) sender);
     }
 
     @Override

@@ -12,7 +12,8 @@ public class MountsModule extends CoreModule {
 
     public static MountsModule instance;
     public MountsEvents events;
-
+    public MountCommand mountCommand;
+    public MountsConfig settings;
 
     public MountsModule(Main plugin) {
         super(plugin, "MountsModule");
@@ -27,13 +28,14 @@ public class MountsModule extends CoreModule {
     @Override
     public List<Command> registerCommands() {
         return Arrays.asList(
-                new MountCommand(plugin)
+                mountCommand
         );
     }
 
     @Override
     public void enable() {
         events = new MountsEvents();
+        mountCommand = new MountCommand(plugin);
     }
 
     @Override
@@ -43,6 +45,6 @@ public class MountsModule extends CoreModule {
 
     @Override
     public void loadConfigs() {
-
+        settings = plugin.getFileManager().load(MountsConfig.class);
     }
 }
