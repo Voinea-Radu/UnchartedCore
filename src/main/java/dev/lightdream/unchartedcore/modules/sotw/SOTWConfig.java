@@ -19,5 +19,9 @@ public class SOTWConfig {
     public boolean SOTWModule = true;
     public boolean combatLogModule = true;
     public boolean cactusHopperModule = true;
+    public boolean renameModule = true;
+
+    public Long startDate = 0L;
+
 
 }

@@ -30,6 +30,7 @@ public class SOTWCommand extends Command {
             plugin.getSettings().set(SOTWModule.instance.settings);
             Main.loadConfigs = false;
             plugin.onEnable();
+            SOTWModule.instance.settings.startDate = System.currentTimeMillis();
             Bukkit.getScheduler().runTaskLater(plugin, () -> {
                 plugin.onDisable();
                 Main.loadConfigs = true;

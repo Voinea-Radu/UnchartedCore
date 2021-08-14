@@ -25,12 +25,12 @@ public class HeadsCommand extends Command {
         Player player = (Player) sender;
         if (args.size() == 0) {
             User user = DatabaseUtils.getUser(player.getUniqueId());
-            MessageUtils.sendMessage(sender, plugin.getMessages().soldTimes.replace("%count%", String.valueOf(user.headSold)));
+            MessageUtils.sendMessage(sender, plugin.getMessages().soldTimes.replace("%count%", String.valueOf(user.headSold)).replace("%player%", user.name));
             return;
         }
         if (!player.hasPermission(this.permission + ".others")) {
             User user = DatabaseUtils.getUser(player.getUniqueId());
-            MessageUtils.sendMessage(sender, plugin.getMessages().soldTimes.replace("%count%", String.valueOf(user.headSold)));
+            MessageUtils.sendMessage(sender, plugin.getMessages().soldTimes.replace("%count%", String.valueOf(user.headSold)).replace("%player%", user.name));
             return;
         }
         User user = DatabaseUtils.getUser(args.get(0));
@@ -38,7 +38,7 @@ public class HeadsCommand extends Command {
             MessageUtils.sendMessage(sender, plugin.getMessages().invalidUser);
             return;
         }
-        MessageUtils.sendMessage(sender, plugin.getMessages().soldTimes.replace("%count%", String.valueOf(user.headSold)));
+        MessageUtils.sendMessage(sender, plugin.getMessages().soldTimes.replace("%count%", String.valueOf(user.headSold)).replace("%player%", user.name));
     }
 
     @Override

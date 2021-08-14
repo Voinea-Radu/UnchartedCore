@@ -1,23 +1,25 @@
 package dev.lightdream.unchartedcore.modules.customEnchants;
 
-import com.massivecraft.factions.Board;
-import com.massivecraft.factions.FLocation;
-import com.massivecraft.factions.Faction;
 import dev.lightdream.unchartedcore.Main;
 import dev.lightdream.unchartedcore.modules.customEnchants.dto.CustomEnchant;
 import dev.lightdream.unchartedcore.utils.Utils;
 import lombok.AllArgsConstructor;
+import org.bukkit.Bukkit;
+import org.bukkit.Material;
+import org.bukkit.block.Block;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Arrow;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
-import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import org.bukkit.util.Vector;
 
 import java.util.*;
 
@@ -25,6 +27,7 @@ public class CustomEnchantsEvents implements Listener {
 
     private final Main plugin;
     private final HashMap<Player, Combo> combos = new HashMap<>();
+    private final List<Player> noDamage = new ArrayList<>();
 
     public CustomEnchantsEvents(Main plugin) {
         this.plugin = plugin;
@@ -61,29 +64,30 @@ public class CustomEnchantsEvents implements Listener {
         double damage = event.getDamage();
 
         EnchantCheck check = checkEnchant(damager, CustomEnchantsModule.instance.comboBoost, CustomEnchantsModule.instance.settings.comboBoost.chance);
-        if (check.use) {
-            Combo combo = combos.getOrDefault(damager, null);
-            if (combo == null) {
-                combo = new Combo(player, 0, 0);
-            }
-            if (combo.player != player) {
-                combo.player = player;
-                combo.count = 0;
-            }
-            if (combo.timeStamp != 0) {
-                if (System.currentTimeMillis() - Long.parseLong(CustomEnchantsModule.instance.settings.comboBoost.args.get(1)) * check.level > combo.timeStamp) {
-                    combos.remove(damager);
-                    return;
-                }
-            }
-            double boost = damage * Double.parseDouble(CustomEnchantsModule.instance.settings.comboBoost.args.get(0)) * check.level;
-            damage += boost * combo.count;
-
-            combo.count++;
-            combo.timeStamp = System.currentTimeMillis();
-
-            combos.put(damager, combo);
+        if (!check.use) {
+            return;
         }
+        Combo combo = combos.getOrDefault(damager, null);
+        if (combo == null) {
+            combo = new Combo(player, 0, 0);
+        }
+        if (combo.player != player) {
+            combo.player = player;
+            combo.count = 0;
+        }
+        if (combo.timeStamp != 0) {
+            if (System.currentTimeMillis() - Long.parseLong(CustomEnchantsModule.instance.settings.comboBoost.args.get(1)) * check.level > combo.timeStamp) {
+                combos.remove(damager);
+                return;
+            }
+        }
+        double boost = damage * Double.parseDouble(CustomEnchantsModule.instance.settings.comboBoost.args.get(0)) * check.level;
+        damage += boost * combo.count;
+
+        combo.count++;
+        combo.timeStamp = System.currentTimeMillis();
+
+        combos.put(damager, combo);
 
 
     }
@@ -116,12 +120,12 @@ public class CustomEnchantsEvents implements Listener {
         Player damager = players.get(0);
 
         EnchantCheck check = checkEnchant(damager, CustomEnchantsModule.instance.critical, CustomEnchantsModule.instance.settings.critical.chance);
-        if (check.use) {
-            double damage = event.getDamage();
-            double boost = damage * Double.parseDouble(CustomEnchantsModule.instance.settings.critical.args.get(0)) * check.level;
-            event.setDamage(damage + boost);
+        if (!check.use) {
+            return;
         }
-
+        double damage = event.getDamage();
+        double boost = damage * Double.parseDouble(CustomEnchantsModule.instance.settings.critical.args.get(0)) * check.level;
+        event.setDamage(damage + boost);
     }
 
     @EventHandler
@@ -140,6 +144,78 @@ public class CustomEnchantsEvents implements Listener {
                 player.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 20 * Integer.parseInt(enchantSettings.args.get(0)) * check.level, Integer.parseInt(enchantSettings.args.get(1)) * check.level), true);
             }
         });
+    }
+
+    @EventHandler
+    public void onSwanSong(EntityDamageEvent event) {
+        if (!(event.getEntity() instanceof Player)) {
+            return;
+        }
+        Player player = (Player) event.getEntity();
+        EnchantCheck check = checkEnchant(player, CustomEnchantsModule.instance.swanSong, CustomEnchantsModule.instance.settings.swanSong.chance);
+        if (!check.use) {
+            return;
+        }
+        if (player.getHealth() - event.getFinalDamage() > 0) {
+            return;
+        }
+        event.setCancelled(true);
+        int time = 20 * Integer.parseInt(CustomEnchantsModule.instance.settings.swanSong.args.get(0)) * check.level;
+        noDamage.add(player);
+        player.setHealth(player.getMaxHealth());
+        Bukkit.getScheduler().runTaskLater(plugin, () -> {
+            noDamage.remove(player);
+            player.setHealth(0);
+        }, time);
+    }
+
+    @EventHandler
+    public void onDamageTake(EntityDamageEvent event) {
+        if (!(event.getEntity() instanceof Player)) {
+            return;
+        }
+        Player player = (Player) event.getEntity();
+        if (noDamage.contains(player)) {
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler
+    public void onUnstable(EntityDamageByEntityEvent event) {
+        List<Player> players = getPlayers(event);
+        if (players == null) {
+            return;
+        }
+        Player damager = players.get(0);
+        Player player = players.get(1);
+
+        EnchantCheck check = checkEnchant(damager, CustomEnchantsModule.instance.unstable, CustomEnchantsModule.instance.settings.unstable.chance);
+        if (!check.use) {
+            return;
+        }
+        player.setHealth(player.getHealth() - check.level * Double.parseDouble(CustomEnchantsModule.instance.settings.unstable.args.get(0)));
+    }
+
+    @EventHandler
+    public void onPlayerSink(EntityDamageByEntityEvent event) {
+        List<Player> players = getPlayers(event);
+        if (players == null) {
+            return;
+        }
+        Player damager = players.get(0);
+        Player player = players.get(1);
+        EnchantCheck check = checkEnchant(damager, CustomEnchantsModule.instance.sinker, CustomEnchantsModule.instance.settings.sinker.chance);
+        if (!check.use) {
+            return;
+        }
+        Block block = player.getWorld().getBlockAt(player.getLocation());
+        if (!block.getType().equals(Material.WATER) && !block.getType().equals(Material.STATIONARY_WATER)) {
+            return;
+        }
+        Entity squidEntity = player.getWorld().spawnEntity(player.getLocation(), EntityType.SQUID);
+        squidEntity.setPassenger(player);
+        squidEntity.setVelocity(new Vector(0, Double.parseDouble(CustomEnchantsModule.instance.settings.sinker.args.get(0)) * check.level, 0));
+        Bukkit.getScheduler().runTaskLater(plugin, squidEntity::remove, 20);
     }
 
 
@@ -183,6 +259,7 @@ public class CustomEnchantsEvents implements Listener {
         }
         return new EnchantCheck(totalLevel != 0, totalLevel);
     }
+
 
     @AllArgsConstructor
     public static class Combo {

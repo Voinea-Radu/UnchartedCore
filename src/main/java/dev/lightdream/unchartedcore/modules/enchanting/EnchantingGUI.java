@@ -44,7 +44,7 @@ public class EnchantingGUI implements InventoryProvider {
                 .size(config.rows, config.columns)
                 .title(config.title)
                 .type(InventoryType.valueOf(config.type))
-                .parent(null)
+                .parent(EnchantingCategoryGUI.getInventory(0))
                 .manager(Main.instance.getInventoryManager())
                 .build();
     }
@@ -74,7 +74,7 @@ public class EnchantingGUI implements InventoryProvider {
                 }));
             } else if (i == config.items.size() - 3) {
                 contents.set(Utils.getSlotPosition(item.item.slot), ClickableItem.of(ItemBuilder.makeItem(item.item), e -> {
-                    player.closeInventory();
+                    getInventory(page).getParent().get().open(player);
                 }));
             } else if (i == config.items.size() - 2) {
                 if (page != 0) {

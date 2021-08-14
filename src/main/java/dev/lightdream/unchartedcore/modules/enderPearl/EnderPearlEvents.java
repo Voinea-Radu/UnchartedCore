@@ -26,7 +26,9 @@ public class EnderPearlEvents implements Listener {
         if (coolDown.contains(player)) {
             event.setCancelled(true);
             MessageUtils.sendMessage(player, Main.instance.getMessages().enderPearlCoolDown);
-            player.getInventory().addItem(new ItemStack(Material.ENDER_PEARL, 1));
+            if (EnderPearlModule.instance.settings.givePearlBack) {
+                player.getInventory().addItem(new ItemStack(Material.ENDER_PEARL, 1));
+            }
             return;
         }
         coolDown.add(player);

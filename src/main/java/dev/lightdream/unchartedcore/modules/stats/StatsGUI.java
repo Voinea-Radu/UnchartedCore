@@ -4,7 +4,6 @@ import dev.lightdream.unchartedcore.Main;
 import dev.lightdream.unchartedcore.databases.User;
 import dev.lightdream.unchartedcore.files.dto.GUIConfig;
 import dev.lightdream.unchartedcore.files.dto.Item;
-import dev.lightdream.unchartedcore.modules.enchanting.EnchantingGUI;
 import dev.lightdream.unchartedcore.utils.ItemBuilder;
 import dev.lightdream.unchartedcore.utils.Utils;
 import dev.lightdream.unchartedcore.utils.init.DatabaseUtils;
@@ -37,25 +36,12 @@ public class StatsGUI implements InventoryProvider {
                 .build();
     }
 
-    @Override
-    public void init(Player player, InventoryContents contents) {
-        contents.fill(ClickableItem.empty(ItemBuilder.makeItem(config.fillItem)));
-        User user = DatabaseUtils.getUser(player.getUniqueId());
-        config.items.forEach(item -> {
-            Item builder = item.item.clone();
-            builder.displayName = StatsGUI.parse(builder.displayName, user);
-            builder.lore = StatsGUI.parse(builder.lore, user);
-            builder.headOwner = StatsGUI.parse(builder.headOwner, user);
-            contents.set(Utils.getSlotPosition(item.item.slot), ClickableItem.empty(ItemBuilder.makeItem(item.item)));
-        });
-    }
-
-    @Override
-    public void update(Player player, InventoryContents contents) {
-
-    }
-
     public static String parse(String raw, User user) {
+
+        if (raw == null) {
+            return raw;
+        }
+
         String parsed = raw;
 
         parsed = parsed.replace("%player%", user.name);
@@ -84,9 +70,30 @@ public class StatsGUI implements InventoryProvider {
     }
 
     public static List<String> parse(List<String> raw, User user) {
+        if (raw == null) {
+            return raw;
+        }
         List<String> parsed = new ArrayList<>();
         raw.forEach(line -> parsed.add(parse(line, user)));
         return parsed;
+    }
+
+    @Override
+    public void init(Player player, InventoryContents contents) {
+        contents.fill(ClickableItem.empty(ItemBuilder.makeItem(config.fillItem)));
+        User user = DatabaseUtils.getUser(player.getUniqueId());
+        config.items.forEach(item -> {
+            Item builder = item.item.clone();
+            builder.displayName = StatsGUI.parse(builder.displayName, user);
+            builder.lore = StatsGUI.parse(builder.lore, user);
+            builder.headOwner = StatsGUI.parse(builder.headOwner, user);
+            contents.set(Utils.getSlotPosition(item.item.slot), ClickableItem.empty(ItemBuilder.makeItem(builder)));
+        });
+    }
+
+    @Override
+    public void update(Player player, InventoryContents contents) {
+
     }
 
 

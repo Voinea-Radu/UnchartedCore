@@ -111,14 +111,28 @@ public class SignShopEvents implements Listener {
         BuySellResponse response;
         switch (signShop.type) {
             case "BUY":
-                response = buy(count, player, data.material.parseMaterial(), data.data);
+                response = buy(count, player, data.material.parseMaterial(), data.data, true);
                 if (response.response) {
                     setSessionSign(player, signShop, response.count * response.price);
+                    break;
                 }
+                if (response.price == -1) {
+                    setSessionSign(player, signShop, plugin.getMessages().cannotBeBought);
+                    break;
+                }
+                setSessionSign(player, signShop, plugin.getMessages().signShopNotEnoughMoney);
                 break;
             case "SELL":
-                response = sell(count, player, data.material.parseMaterial(), data.data);
-                setSessionSign(player, signShop, response.count * response.price);
+                response = sell(count, player, data.material.parseMaterial(), data.data, true);
+                if (response.response) {
+                    setSessionSign(player, signShop, response.count * response.price);
+                    break;
+                }
+                if (response.price == -1) {
+                    setSessionSign(player, signShop, plugin.getMessages().cannotBeSold);
+                    break;
+                }
+                setSessionSign(player, signShop, plugin.getMessages().signShopNotEnoughItems);
                 break;
         }
     }
@@ -135,10 +149,16 @@ public class SignShopEvents implements Listener {
 
     }
 
-    public BuySellResponse buy(int count, Player player, Material material, String dta) {
+    public BuySellResponse buy(int count, Player player, Material material, String dta, boolean sign) {
         count = Utils.addAvailable(player, material, count, false);
         SignShopEntry data = SignShopModule.instance.settings.getEntryByMaterial(material.toString(), dta);
         double price = data.buyPrice;
+        if (price == -1) {
+            if (!sign) {
+                MessageUtils.sendMessage(player, plugin.getMessages().cannotBeBought);
+            }
+            return new BuySellResponse(0, -1.0, false);
+        }
         if (plugin.getEconomy().getBalance(player) >= price * count) {
             plugin.getEconomy().withdrawPlayer(player, price * count);
             if (material.equals(Material.MOB_SPAWNER)) {
@@ -148,26 +168,41 @@ public class SignShopEvents implements Listener {
             }
             return new BuySellResponse(count, price, true);
         } else {
-            MessageUtils.sendMessage(player, plugin.getMessages().signShopNotEnoughMoney);
+            if (!sign) {
+                MessageUtils.sendMessage(player, plugin.getMessages().signShopNotEnoughMoney);
+            }
             return new BuySellResponse(count, price, false);
         }
     }
 
-    public BuySellResponse sell(int count, Player player, Material material, String dta) {
+    public BuySellResponse sell(int count, Player player, Material material, String dta, boolean sign) {
         if (material.equals(Material.MOB_SPAWNER)) {
-            MessageUtils.sendMessage(player, plugin.getMessages().invalidItem);
+            if (!sign) {
+                MessageUtils.sendMessage(player, plugin.getMessages().invalidItem);
+            }
             return new BuySellResponse(0, 0.0, false);
         }
         SignShopEntry data = SignShopModule.instance.settings.getEntryByMaterial(material.toString(), dta);
         if (data == null) {
-            MessageUtils.sendMessage(player, plugin.getMessages().invalidItem);
+            if (!sign) {
+                MessageUtils.sendMessage(player, plugin.getMessages().invalidItem);
+            }
             return new BuySellResponse(0, 0.0, false);
         }
         double price = data.sellPrice;
+        if (price == -1) {
+            if (!sign) {
+                MessageUtils.sendMessage(player, plugin.getMessages().cannotBeSold);
+            }
+            return new BuySellResponse(0, -1.0, false);
+        }
         count = Utils.removeAvailable(player, count, material);
         plugin.getEconomy().depositPlayer(player, price * count);
         if (count == 0) {
-            MessageUtils.sendMessage(player, plugin.getMessages().signShopNotEnoughItems);
+            if (!sign) {
+                MessageUtils.sendMessage(player, plugin.getMessages().signShopNotEnoughItems);
+            }
+            return new BuySellResponse(count, price, false);
         }
         return new BuySellResponse(count, price, true);
 
@@ -187,6 +222,19 @@ public class SignShopEvents implements Listener {
         displaySignShopSession(player, checkSession);
     }
 
+    private void setSessionSign(Player player, SignShop signShop, String message) {
+        SignShopSession checkSession = new SignShopSession(player, signShop, 0.0, System.currentTimeMillis());
+        if (sessions.contains(checkSession)) {
+            int sessionIndex = sessions.indexOf(checkSession);
+            SignShopSession session = sessions.get(sessionIndex);
+            session.updateTimestamp = System.currentTimeMillis();
+            displaySignShopSession(player, session, message);
+            return;
+        }
+        sessions.add(checkSession);
+        displaySignShopSession(player, checkSession, message);
+    }
+
     private void displaySignShopSession(Player player, SignShopSession session) {
         Block block = player.getWorld().getBlockAt(session.shop.getLocation());
         Sign sign = (Sign) block.getState();
@@ -197,6 +245,21 @@ public class SignShopEvents implements Listener {
                 break;
             case "SELL":
                 lines[3] = Utils.color(plugin.getMessages().signMoneyEarned.replace("%amount%", String.valueOf(session.amount)));
+                break;
+        }
+        player.sendSignChange(session.shop.getLocation(), lines);
+    }
+
+    private void displaySignShopSession(Player player, SignShopSession session, String mesage) {
+        Block block = player.getWorld().getBlockAt(session.shop.getLocation());
+        Sign sign = (Sign) block.getState();
+        String[] lines = sign.getLines();
+        switch (session.shop.type) {
+            case "BUY":
+                lines[3] = Utils.color(mesage);
+                break;
+            case "SELL":
+                lines[3] = Utils.color(mesage);
                 break;
         }
         player.sendSignChange(session.shop.getLocation(), lines);
@@ -226,7 +289,7 @@ public class SignShopEvents implements Listener {
 
     @AllArgsConstructor
     @NoArgsConstructor
-    public static class BuySellResponse {
+    public class BuySellResponse {
         public Integer count;
         public Double price;
         public Boolean response;

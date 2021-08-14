@@ -4,7 +4,6 @@ import dev.lightdream.unchartedcore.files.dto.*;
 import dev.lightdream.unchartedcore.modules.enchanting.dto.Enchant;
 import dev.lightdream.unchartedcore.modules.enchanting.dto.EnchantCategory;
 import lombok.NoArgsConstructor;
-import net.minecraft.server.v1_8_R3.Enchantment;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -74,7 +73,19 @@ public class EnchantingConfig {
             ), Arrays.asList("BOOK", "SWORD", "BOW")),
             new EnchantCategory("Slowness", Arrays.asList(
                     new Enchant("Slowness", "SLOW", 1, 50)
-            ), Arrays.asList("BOOK", "SWORD", "BOW"))
+            ), Arrays.asList("BOOK", "SWORD", "BOW")),
+            new EnchantCategory("SWAN_SONG", Arrays.asList(
+                    new Enchant("SWAN_SONG", "SWAN_SONG", 1, 50)
+            ), Arrays.asList("BOOK", "HELMET", "CHESTPLATE", "LEGGINGS", "BOOTS")),
+            new EnchantCategory("UNSTABLE", Arrays.asList(
+                    new Enchant("UNSTABLE", "UNSTABLE", 1, 50),
+                    new Enchant("UNSTABLE", "UNSTABLE", 2, 100),
+                    new Enchant("UNSTABLE", "UNSTABLE", 3, 150)
+            ), Arrays.asList("BOOK", "SWORD")),
+            new EnchantCategory("SINKER", Arrays.asList(
+                    new Enchant("SINKER", "SINKER", 1, 50)
+            ), Arrays.asList("BOOK", "SWORD"))
+
 
     );
     public GUIConfig guiConfig = new GUIConfig("enchant_table", "CHEST", "Enchant Table", 6, 9, new Item(XMaterial.BLACK_STAINED_GLASS_PANE, 1), Arrays.asList(

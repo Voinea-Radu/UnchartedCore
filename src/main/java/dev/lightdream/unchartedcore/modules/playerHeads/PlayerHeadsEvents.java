@@ -62,7 +62,7 @@ public class PlayerHeadsEvents implements Listener {
     }
 
     @EventHandler()
-    public void onSellCommandSend(PlayerCommandPreprocessEvent event) {
+    public void onHeadCommandSend(PlayerCommandPreprocessEvent event) {
         Player player = event.getPlayer();
         String message = event.getMessage();
         String[] parts = message.split(" ");

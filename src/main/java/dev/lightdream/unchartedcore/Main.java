@@ -20,6 +20,7 @@ import dev.lightdream.unchartedcore.modules.kits.KitsModule;
 import dev.lightdream.unchartedcore.modules.mounts.MountsModule;
 import dev.lightdream.unchartedcore.modules.netherPortal.NetherPortalModule;
 import dev.lightdream.unchartedcore.modules.playerHeads.PlayerHeadsModule;
+import dev.lightdream.unchartedcore.modules.rename.RenameModule;
 import dev.lightdream.unchartedcore.modules.signshop.SignShopModule;
 import dev.lightdream.unchartedcore.modules.silkSpawners.SilkSpawnersModule;
 import dev.lightdream.unchartedcore.modules.sotw.SOTWModule;
@@ -75,6 +76,8 @@ public final class Main extends JavaPlugin {
 
         fileManager = new FileManager(this, FileManager.PersistType.YAML);
 
+        settings = fileManager.load(Config.class);
+
         //Modules
         if (settings.signShopModule) {
             modules.add(new SignShopModule(this));
@@ -126,6 +129,9 @@ public final class Main extends JavaPlugin {
         }
         if (settings.cactusHopperModule) {
             modules.add(new CactusHopperModule(this));
+        }
+        if (settings.renameModule) {
+            modules.add(new RenameModule(this));
         }
 
 
@@ -187,7 +193,7 @@ public final class Main extends JavaPlugin {
     }
 
     public void loadConfigs() {
-        settings = fileManager.load(Config.class);
+        //settings = fileManager.load(Config.class);
         messages = fileManager.load(Messages.class);
         sql = fileManager.load(SQL.class);
         GUIs = fileManager.load(GUIs.class);

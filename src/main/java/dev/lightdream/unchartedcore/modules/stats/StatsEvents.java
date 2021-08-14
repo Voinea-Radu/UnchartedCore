@@ -3,7 +3,6 @@ package dev.lightdream.unchartedcore.modules.stats;
 import dev.lightdream.unchartedcore.Main;
 import dev.lightdream.unchartedcore.databases.StatSign;
 import dev.lightdream.unchartedcore.databases.User;
-import dev.lightdream.unchartedcore.modules.signshop.SignShopModule;
 import dev.lightdream.unchartedcore.utils.init.DatabaseUtils;
 import dev.lightdream.unchartedcore.utils.init.MessageUtils;
 import org.bukkit.Bukkit;
@@ -18,13 +17,14 @@ import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.scheduler.BukkitTask;
 
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 public class StatsEvents implements Listener {
 
-    private final HashMap<Player, Long> joinTime = new HashMap<>();
+    public HashMap<Player, Long> joinTime = new HashMap<>();
     public HashMap<String, User> top = new HashMap<>();
     public List<String> stats = Arrays.asList(
             "Kills",
@@ -36,16 +36,28 @@ public class StatsEvents implements Listener {
     public Main plugin;
     public List<Player> deleteSession = new ArrayList<>();
     public HashMap<Player, List<Player>> killCoolDown = new HashMap<>();
+    private boolean calculatedTop = false;
+    private BukkitTask processSignsTask;
 
     public StatsEvents() {
         this.plugin = Main.instance;
-        Bukkit.getScheduler().runTaskTimerAsynchronously(plugin, this::calculateTop, 1 * 20 * 60L / 2, StatsModule.instance.settings.topCalculate * 20L);
+        Bukkit.getScheduler().runTaskTimerAsynchronously(plugin, this::calculateTop, 20 * 60L / 2, StatsModule.instance.settings.topCalculate * 20L);
+        processSignsTask = Bukkit.getScheduler().runTaskTimer(plugin, () -> {
+            if (calculatedTop) {
+                StatsModule.instance.processSigns();
+                processSignsTask.cancel();
+                calculatedTop = false;
+            }
+        }, 0, 5 * 20L);
     }
 
     @EventHandler
     public void onPlayerKill(PlayerDeathEvent event) {
         Player player = event.getEntity();
         Player killer = player.getKiller();
+        if (killer == null) {
+            return;
+        }
         List<Player> coolDown = killCoolDown.getOrDefault(killer, new ArrayList<>());
         if (coolDown.contains(player)) {
             return;
@@ -126,7 +138,7 @@ public class StatsEvents implements Listener {
 
     public void calculateTop() {
         stats.forEach(this::calculateTop);
-        StatsModule.instance.processSigns();
+        calculatedTop = true;
     }
 
     public void calculateTop(String stat) {
@@ -191,14 +203,12 @@ public class StatsEvents implements Listener {
     public void onStatsCommandSend(PlayerCommandPreprocessEvent event) {
         Player player = event.getPlayer();
         String message = event.getMessage();
-        System.out.println(message);
         String[] parts = message.split(" ");
-        if (parts[0].equals("/stat")||parts[0].equals("/stats")) {
+        if (parts[0].equals("/stat") || parts[0].equals("/stats")) {
             event.setCancelled(true);
             StatsModule.instance.statsCommand.execute(player, new ArrayList<>(Arrays.asList(parts).subList(1, parts.length)));
         }
     }
-
 
 
     public static class StatsComparator implements Comparator<User> {

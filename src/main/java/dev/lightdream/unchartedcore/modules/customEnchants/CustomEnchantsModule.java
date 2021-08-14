@@ -24,6 +24,9 @@ public class CustomEnchantsModule extends CoreModule {
     public Enchantment comboBoost;
     public Enchantment antiDepthStrider;
     public Enchantment critical;
+    public Enchantment swanSong;
+    public Enchantment unstable;
+    public Enchantment sinker;
     public HashMap<String, Enchantment> potionEnchants = new HashMap<>();
 
     public List<Enchantment> customEnchantments = new ArrayList<>();
@@ -77,6 +80,9 @@ public class CustomEnchantsModule extends CoreModule {
         comboBoost = new ComboBoost(CustomEnchantsModule.instance.settings.comboBoost.id);
         antiDepthStrider = new AntiDepthStrider(CustomEnchantsModule.instance.settings.antiDepthStrider.id);
         critical = new Critical(CustomEnchantsModule.instance.settings.critical.id);
+        swanSong = new SwanSong(CustomEnchantsModule.instance.settings.swanSong.id);
+        unstable = new Unstable(CustomEnchantsModule.instance.settings.unstable.id);
+        sinker = new Sinker(CustomEnchantsModule.instance.settings.sinker.id);
 
         settings.potions.forEach(potion -> {
             Enchantment enchantment = new Potion(potion.enchantSettings.id, potion.enchantSettings.name, potion.enchantSettings.maxLevel, potion.enchantSettings.target);
@@ -88,6 +94,9 @@ public class CustomEnchantsModule extends CoreModule {
         customEnchantments.add(comboBoost);
         customEnchantments.add(antiDepthStrider);
         customEnchantments.add(critical);
+        customEnchantments.add(swanSong);
+        customEnchantments.add(unstable);
+        customEnchantments.add(sinker);
 
         customEnchantments.forEach(this::registerEnchant);
     }
@@ -131,6 +140,12 @@ public class CustomEnchantsModule extends CoreModule {
                 return antiDepthStrider;
             case "CRITICAL":
                 return critical;
+            case "SWAN_SONG":
+                return swanSong;
+            case "UNSTABLE":
+                return unstable;
+            case "SINKER":
+                return sinker;
         }
         for (String potion : potionEnchants.keySet()) {
             if(potion.equals(name)){

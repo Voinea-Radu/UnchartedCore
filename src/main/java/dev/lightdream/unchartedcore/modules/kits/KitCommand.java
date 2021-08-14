@@ -3,6 +3,7 @@ package dev.lightdream.unchartedcore.modules.kits;
 import dev.lightdream.unchartedcore.Main;
 import dev.lightdream.unchartedcore.commands.Command;
 import dev.lightdream.unchartedcore.databases.Kit;
+import dev.lightdream.unchartedcore.modules.sotw.SOTWModule;
 import dev.lightdream.unchartedcore.utils.ItemBuilder;
 import dev.lightdream.unchartedcore.utils.init.DatabaseUtils;
 import dev.lightdream.unchartedcore.utils.init.MessageUtils;
@@ -52,8 +53,15 @@ public class KitCommand extends Command {
                 return;
             }
             try {
-                kit.getKit(KitsModule.instance.settings.level).forEach(item -> {
-                    if(item!=null){
+                int level = 1;
+                for (Integer upDate : KitsModule.instance.settings.upDates) {
+                    if (System.currentTimeMillis() - SOTWModule.instance.settings.startDate > upDate * 1000 * 60 * 60L) {
+                        level++;
+                    }
+                }
+
+                kit.getKit(level).forEach(item -> {
+                    if (item != null) {
                         player.getInventory().addItem(item);
                     }
                 });

@@ -54,28 +54,25 @@ public class EnchantingCategoryGUI implements InventoryProvider {
     public void update(Player player, InventoryContents contents) {
         if (enchantingItem == null) {
             for (int i = 0; i < config.items.size(); i++) {
-                if (i != config.items.size() - 1 && i != config.items.size() - 2) {
+                if (i == config.items.size() - 3) {
+                    contents.set(Utils.getSlotPosition(config.items.get(i).item.slot), ClickableItem.of(ItemBuilder.makeItem(config.items.get(i).item), e -> {
+                        player.closeInventory();
+                    }));
+                } else if (i != config.items.size() - 1 && i != config.items.size() - 2) {
                     contents.set(Utils.getSlotPosition(config.items.get(i).item.slot), null);
                 }
-            }
-            if (enchantingItem != null) {
-                contents.set(Utils.getSlotPosition(config.items.get(0).item.slot), ClickableItem.empty(enchantingItem));
             }
         } else {
             List<EnchantCategory> categories = EnchantingModule.instance.settings.getEnchantCategories(enchantingItem.getType().toString());
             for (int i = 0; i < config.items.size(); i++) {
                 GUIItem item = config.items.get(i);
                 if (config.items.indexOf(item) == 0) {
-                    if (enchantingItem == null) {
-                        contents.set(Utils.getSlotPosition(item.item.slot), null);
-                    } else {
-                        contents.set(Utils.getSlotPosition(item.item.slot), ClickableItem.of(enchantingItem, e -> {
-                            player.getInventory().addItem(enchantingItem);
-                            EnchantingModule.instance.events.items.remove(player);
-                            player.closeInventory();
-                            getInventory(0).open(player);
-                        }));
-                    }
+                    contents.set(Utils.getSlotPosition(item.item.slot), ClickableItem.of(enchantingItem, e -> {
+                        player.getInventory().addItem(enchantingItem);
+                        EnchantingModule.instance.events.items.remove(player);
+                        player.closeInventory();
+                        getInventory(0).open(player);
+                    }));
                 } else if (i == config.items.size() - 3) {
                     contents.set(Utils.getSlotPosition(item.item.slot), ClickableItem.of(ItemBuilder.makeItem(item.item), e -> {
                         player.closeInventory();

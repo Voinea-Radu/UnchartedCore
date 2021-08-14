@@ -15,6 +15,10 @@ import java.util.List;
 
 public class HomesModule extends CoreModule {
 
+    public static HomesModule instance;
+    public HomeCommand homeCommand;
+
+
     public HomesModule(Main plugin) {
         super(plugin, "TempHomesModule");
     }
@@ -27,7 +31,7 @@ public class HomesModule extends CoreModule {
     @Override
     public List<Command> registerCommands() {
         return Arrays.asList(
-                new HomeCommand(plugin),
+                homeCommand,
                 new AllowHomeCommand(plugin),
                 new AddHomeCommand(plugin)
         );
@@ -35,7 +39,7 @@ public class HomesModule extends CoreModule {
 
     @Override
     public void enable() {
-
+        homeCommand = new HomeCommand(plugin);
     }
 
     @Override

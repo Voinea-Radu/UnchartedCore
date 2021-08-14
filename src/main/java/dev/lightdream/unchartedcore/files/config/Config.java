@@ -23,6 +23,7 @@ public class Config {
     public boolean SOTWModule = true;
     public boolean combatLogModule = true;
     public boolean cactusHopperModule = true;
+    public boolean renameModule = true;
 
     public void set(SOTWConfig config) {
         this.signShopModule = config.signShopModule;
@@ -42,5 +43,6 @@ public class Config {
         this.SOTWModule = config.SOTWModule;
         this.combatLogModule = config.combatLogModule;
         this.cactusHopperModule = config.cactusHopperModule;
+        this.renameModule = config.renameModule;
     }
 }

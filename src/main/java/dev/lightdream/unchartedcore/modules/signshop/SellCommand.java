@@ -33,10 +33,10 @@ public class SellCommand extends Command {
         SignShopEvents.BuySellResponse response;
         switch (args.get(0)) {
             case "hand":
-                response = SignShopModule.instance.events.sell(player.getItemInHand().getAmount(), player, player.getItemInHand().getType(), "");
+                response = SignShopModule.instance.events.sell(player.getItemInHand().getAmount(), player, player.getItemInHand().getType(), "", false);
                 break;
             case "all":
-                response = SignShopModule.instance.events.sell(1000000, player, player.getItemInHand().getType(), "");
+                response = SignShopModule.instance.events.sell(1000000, player, player.getItemInHand().getType(), "", false);
                 break;
             default:
                 sendUsage(sender);

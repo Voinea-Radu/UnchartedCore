@@ -16,6 +16,7 @@ public class Messages {
     public String noPermission = "You do not have the permission to use this command.";
     public String unknownCommand = "This is not a valid command.";
     public String invalidUser = "This is an invalid user";
+    public String userNotOnline = "This user is not valid";
 
     //Leave empty for auto-generated
     public List<String> helpCommand = new ArrayList<>();
@@ -40,6 +41,8 @@ public class Messages {
     public String signShopNotEnoughItems = "Not enough items";
     public String sold = "You have sold %amount% items for $%price%";
     public String invalidItem = "This item is invalid";
+    public String cannotBeBought = "This item can not be bough";
+    public String cannotBeSold = "This item can not be sold";
 
     //Anvils
     public String typeName = "Please type your new name.";
@@ -48,7 +51,7 @@ public class Messages {
     public String invalidHead = "This is not a valid player head";
     public String cannotSellOwnHead = "You can not sell your own head";
     public String soldHead = "Sold the head for";
-    public String soldTimes = "This head has been sold %count% times";
+    public String soldTimes = "%player%'s head has been sold %count% times";
 
     //Stats
     public String statsSignInfoLine = "TOP";
@@ -78,6 +81,10 @@ public class Messages {
 
     //Pearls
     public String enderPearlCoolDown= "You can only use a pearl at 5s";
+
+    //Rename
+    public String rename = "Put your item in main hand and type in chat your new name. Type cancel to cancel";
+    public String noItem = "You have no item in your hand";
 
 
 }
