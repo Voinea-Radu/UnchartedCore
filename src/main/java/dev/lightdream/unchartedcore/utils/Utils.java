@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.TimeUnit;
 
 @SuppressWarnings("unused")
 public class Utils {
@@ -28,7 +29,7 @@ public class Utils {
     }
 
     public static boolean checkExecute(double chance) {
-        if (chance == 100) {
+        if (chance >= 100) {
             return true;
         }
         double result = Math.random() * 101 + 0;
@@ -151,6 +152,17 @@ public class Utils {
             row--;
         }
         return new SlotPos(row, column - 1);
+    }
+
+    public static String msToTime(Long ms){
+        long days = TimeUnit.MILLISECONDS.toDays(ms);
+        ms -= TimeUnit.DAYS.toMillis(days);
+        long hours = TimeUnit.MILLISECONDS.toHours(ms);
+        ms -= TimeUnit.HOURS.toMillis(hours);
+        long minutes = TimeUnit.MILLISECONDS.toMinutes(ms);
+        ms -= TimeUnit.MINUTES.toMillis(minutes);
+        long seconds = TimeUnit.MILLISECONDS.toSeconds(ms);
+        return days + "d " + hours + "h " + minutes + "m " + seconds + "s";
     }
 
 

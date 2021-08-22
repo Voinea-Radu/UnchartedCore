@@ -4,10 +4,11 @@ import dev.lightdream.unchartedcore.Main;
 import dev.lightdream.unchartedcore.utils.init.MessageUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerTeleportEvent;
+import org.bukkit.event.entity.ProjectileLaunchEvent;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
@@ -18,11 +19,16 @@ public class EnderPearlEvents implements Listener {
     List<Player> coolDown = new ArrayList<>();
 
     @EventHandler
-    public void onPlayerPearl(PlayerTeleportEvent event) {
+    public void onPlayerPearl(ProjectileLaunchEvent event) {
+        if (!event.getEntity().getType().equals(EntityType.ENDER_PEARL)) {
+            return;
+        }
+        /*
         if (!event.getCause().equals(PlayerTeleportEvent.TeleportCause.ENDER_PEARL)) {
             return;
         }
-        Player player = event.getPlayer();
+         */
+        Player player = (Player) event.getEntity().getShooter();
         if (coolDown.contains(player)) {
             event.setCancelled(true);
             MessageUtils.sendMessage(player, Main.instance.getMessages().enderPearlCoolDown);

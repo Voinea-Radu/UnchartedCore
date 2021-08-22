@@ -53,6 +53,7 @@ public class MountsGUI implements InventoryProvider {
                 horse.setJumpStrength(mount.jumpPower);
                 horse.setMaxHealth(mount.health);
                 horse.setHealth(mount.health);
+
                 if (mount.armour != null) {
                     horse.getInventory().setArmor(new ItemStack(Material.getMaterial(mount.armour), 1));
                     ParticleEffect.EXPLOSION_HUGE.display(player.getLocation());

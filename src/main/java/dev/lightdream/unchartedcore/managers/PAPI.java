@@ -2,7 +2,10 @@ package dev.lightdream.unchartedcore.managers;
 
 import dev.lightdream.unchartedcore.Main;
 import dev.lightdream.unchartedcore.databases.User;
+import dev.lightdream.unchartedcore.modules.kits.KitsModule;
+import dev.lightdream.unchartedcore.modules.sotw.SOTWModule;
 import dev.lightdream.unchartedcore.modules.stats.StatsModule;
+import dev.lightdream.unchartedcore.utils.Utils;
 import dev.lightdream.unchartedcore.utils.init.DatabaseUtils;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import org.bukkit.OfflinePlayer;
@@ -46,7 +49,7 @@ public class PAPI extends PlaceholderExpansion {
 
         User user = DatabaseUtils.getUser(player.getUniqueId());
 
-        switch (identifier){
+        switch (identifier) {
             case "kills":
                 return StatsModule.instance.events.getStat(user, "Kills", true);
             case "deaths":
@@ -57,6 +60,19 @@ public class PAPI extends PlaceholderExpansion {
                 return StatsModule.instance.events.getStat(user, "Traveled", true);
             case "joinDate":
                 return StatsModule.instance.events.getStat(user, "Join Date", true);
+            case "kitRankup":
+                int level = 1;
+                for (Integer upDate : KitsModule.instance.settings.upDates) {
+                    if (System.currentTimeMillis() - SOTWModule.instance.settings.startDate > upDate * 1000 * 60 * 60L) {
+                        level++;
+                    }
+                }
+                if (KitsModule.instance.settings.upDates.size() >= level) {
+                    return Utils.msToTime(SOTWModule.instance.settings.startDate - KitsModule.instance.settings.upDates.get(level) * 100 * 60 * 60L);
+                } else {
+                    return "MAX LEVEL";
+                }
+
         }
 
         return null;
