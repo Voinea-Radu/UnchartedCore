@@ -4,6 +4,7 @@ import org.bukkit.entity.Player;
 
 public class XPUtils {
 
+    //
     public static int getTotalExperience(int level) {
         int xp = 0;
 
